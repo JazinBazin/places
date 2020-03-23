@@ -1,6 +1,7 @@
 import React from "react";
 import PlacesForm from "./PlacesForm";
 import SearchForm from "./SearchForm";
+import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
 
 class Places extends React.Component {
@@ -181,7 +182,7 @@ class Places extends React.Component {
             <React.Fragment>
                 {this.state.modalWindow}
                 <div className="row justify-content-center">
-                    <div className="col-6 border rounded p-2 mt-2 mr-2">
+                    <div className="col-4 border rounded p-2 mt-2 mr-2">
                         <PlacesForm
                             name={this.state.name} handleNameChange={this.handleNameChange}
                             row={this.state.row} handleRowChange={this.handleRowChange}
@@ -193,11 +194,21 @@ class Places extends React.Component {
                             handleReplaceButtonClicked={this.handleReplaceButtonClicked}
                             handleResetButtonClicked={this.handleResetButtonClicked} />
                     </div>
-                    <div className="col-4">
+                    <div className="col-3">
                         <SearchForm searchName={this.state.searchName}
                             handleSearchNameChanged={this.handleSearchNameChanged}
                             handleSearchButtonClicked={this.handleSearchButtonClicked} />
                     </div>
+                </div>
+                <div className="row flex-nowrap mt-4">
+                    {this.state.sectors.map((sector, index) => (
+                        <div key={index} className="flex-fill ml-2 mr-2">
+                            <Sector
+                                sector={sector}
+                                sectorSize={this.state.sectorSizes[index]}
+                                sectorNumber={index + 1} />
+                        </div>
+                    ))}
                 </div>
             </React.Fragment >
         );

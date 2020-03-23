@@ -1,0 +1,5 @@
+
+.test::before, .test::after {
+    content: '';  /* Insert pseudo-element */
+    margin: auto; /* Make it push flex items to the center */
+  }
