@@ -1,6 +1,7 @@
 import React from "react";
+import PlacesForm from "./PlacesForm";
+import SearchForm from "./SearchForm";
 import ModalWindow from "./ModalWindow";
-
 
 class Places extends React.Component {
     constructor(props) {
@@ -30,7 +31,8 @@ class Places extends React.Component {
 
     handleSectorChange = e => {
         const value = this.checkIsNumberOrEmpty(e.target.value);
-        if (!isNaN(value) && value) this.setState({ sector: value });
+        if (!isNaN(value))
+            this.setState({ sector: value });
     }
 
     handleRowChange = e => {
@@ -44,7 +46,7 @@ class Places extends React.Component {
     }
 
     handleAddButtonClicked = () => {
-        if (this.checkName() && this.checkSector &&
+        if (this.checkName() && this.checkSector() &&
             this.checkRow() && this.checkPlace() &&
             this.checkPlaceTaken()) {
             this.setState(state => ({
@@ -73,7 +75,7 @@ class Places extends React.Component {
         }
     };
 
-    handleRemovePerson = () => {
+    handleRemovePersonButtonClicked = () => {
         if (this.checkName() && this.checkPersonExists()) {
             this.setState(state => ({
                 mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
@@ -95,7 +97,7 @@ class Places extends React.Component {
         }
     }
 
-    handleClearPlace = () => {
+    handleClearPlaceButtonClicked = () => {
         if (this.checkSector() && this.checkRow() && this.checkPlace() && this.checkPlaceEmpty()) {
             this.setState(state => ({
                 mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
@@ -124,7 +126,7 @@ class Places extends React.Component {
     }
 
     handleReplaceButtonClicked = () => {
-        if (this.checkName() && this.checkSector &&
+        if (this.checkName() && this.checkSector() &&
             this.checkRow() && this.checkPlace() &&
             this.checkPlaceEmpty()) {
             this.setState(state => ({
@@ -167,7 +169,11 @@ class Places extends React.Component {
     handleSearchNameChanged = e => this.setState({ searchName: e.target.value });
 
     handleSearchButtonClicked = () => {
-        alert("Search");
+        if (this.checkSearchName() && this.checkPersonExists()) {
+            const personPlace = this.state.mapNamesToPlaces[this.state.searchName];
+            this.showModalWindow("Поиск по фамилии",
+                `${this.state.searchName}: сектор ${personPlace.sector + 1} ряд ${personPlace.row + 1} место ${personPlace.place + 1}`);
+        }
     }
 
     render() {
@@ -176,107 +182,24 @@ class Places extends React.Component {
                 {this.state.modalWindow}
                 <div className="row justify-content-center">
                     <div className="col-6 border rounded p-2 mt-2 mr-2">
-                        <form>
-                            <h4 className="text-center">Распределение мест</h4>
-                            <div className="form-row mt-2">
-                                <div className="col">
-                                    <div className="form-group">
-                                        <label>Фамилия:</label>
-                                        <input
-                                            className="form-control"
-                                            type="text"
-                                            value={this.state.name}
-                                            onChange={this.handleNameChange} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Ряд:</label>
-                                        <input
-                                            className="form-control"
-                                            type="text"
-                                            value={this.state.row}
-                                            onChange={this.handleRowChange} />
-                                    </div>
-                                </div>
-                                <div className="col">
-                                    <div className="form-group">
-                                        <label>Сектор:</label>
-                                        <input
-                                            className="form-control"
-                                            type="text"
-                                            value={this.state.sector}
-                                            onChange={this.handleSectorChange} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Место:</label>
-                                        <input
-                                            className="form-control"
-                                            type="text"
-                                            value={this.state.place}
-                                            onChange={this.handlePlaceChange} />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="form-row justify-content-center">
-                                <div className="col-auto">
-                                    <button
-                                        className="btn btn-primary btn-sm mr-2"
-                                        type="button"
-                                        onClick={this.handleAddButtonClicked}>
-                                        Добавить
-                                    </button>
-                                    <button
-                                        className="btn btn-primary btn-sm mr-2"
-                                        type="button"
-                                        onClick={this.handleRemovePerson}>
-                                        Удалить участника
-                                    </button>
-                                    <button
-                                        className="btn btn-primary btn-sm mr-2"
-                                        type="button"
-                                        onClick={this.handleClearPlace}>
-                                        Освободить место
-                                    </button>
-                                    <button
-                                        className="btn btn-primary btn-sm mr-2"
-                                        type="button"
-                                        onClick={this.handleReplaceButtonClicked}>
-                                        Заменить
-                                    </button>
-                                    <button
-                                        className="btn btn-primary btn-sm"
-                                        type="reset"
-                                        onClick={this.handleResetButtonClicked}>
-                                        Очистить
-                                </button>
-                                </div>
-                            </div>
-                        </form>
+                        <PlacesForm
+                            name={this.state.name} handleNameChange={this.handleNameChange}
+                            row={this.state.row} handleRowChange={this.handleRowChange}
+                            sector={this.state.sector} handleSectorChange={this.handleSectorChange}
+                            place={this.state.place} handlePlaceChange={this.handlePlaceChange}
+                            handleAddButtonClicked={this.handleAddButtonClicked}
+                            handleRemovePersonButtonClicked={this.handleRemovePersonButtonClicked}
+                            handleClearPlaceButtonClicked={this.handleClearPlaceButtonClicked}
+                            handleReplaceButtonClicked={this.handleReplaceButtonClicked}
+                            handleResetButtonClicked={this.handleResetButtonClicked} />
                     </div>
-                    <div className="col-4 ">
-                        <form className="border rounded p-2 mt-2">
-                            <h4 className="text-center">Поиск по фамилии</h4>
-                            <div className="form-row mt-2">
-                                <div className="col">
-                                    <input
-                                        className="form-control"
-                                        type="text"
-                                        value={this.state.searchName}
-                                        placeholder="Фамилия"
-                                        onChange={this.handleSearchNameChanged} />
-                                </div>
-                                <div className="col-auto">
-                                    <button
-                                        className="btn btn-primary"
-                                        type="button"
-                                        onClick={this.handleSearchButtonClicked}>
-                                        Поиск
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                    <div className="col-4">
+                        <SearchForm searchName={this.state.searchName}
+                            handleSearchNameChanged={this.handleSearchNameChanged}
+                            handleSearchButtonClicked={this.handleSearchButtonClicked} />
                     </div>
                 </div>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 
@@ -310,10 +233,10 @@ class Places extends React.Component {
             this.showModalWindow("Распределение мест", "Введите номер ряда");
             return false;
         }
-        if (row > this.state.sectorSizes[sector].rows) {
+        if (row > this.state.sectorSizes[sector - 1].rows) {
             this.showModalWindow("Распределение мест",
                 `Номер ряда в секторе ${sector} должен быть в диапазоне от 1
-                 до ${this.state.sectorSizes[sector].rows} включительно`);
+                 до ${this.state.sectorSizes[sector - 1].rows} включительно`);
             return false;
         }
         return true;
@@ -326,10 +249,10 @@ class Places extends React.Component {
             this.showModalWindow("Распределение мест", "Введите номер места");
             return false;
         }
-        if (place > this.state.sectorSizes[sector].cols) {
+        if (place > this.state.sectorSizes[sector - 1].cols) {
             this.showModalWindow("Распределение мест",
                 `Номер места в секторе ${sector} должен быть в диапазоне от 1
-                 до ${this.state.sectorSizes[sector].cols} включительно`);
+                 до ${this.state.sectorSizes[sector - 1].cols} включительно`);
             return false;
         }
         return true;
@@ -362,6 +285,15 @@ class Places extends React.Component {
         if (this.state.mapNamesToPlaces[this.state.name] === undefined) {
             this.showModalWindow("Распределение мест", "Указанного участника не существует");
             return;
+        }
+        return true;
+    }
+
+    checkSearchName = () => {
+        const name = this.state.searchName;
+        if (name.length == 0) {
+            this.showModalWindow("Распределение мест", "Введите фамилию для поиска");
+            return false;
         }
         return true;
     }
