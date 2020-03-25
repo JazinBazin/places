@@ -1,7 +1,7 @@
 import React from "react";
 
 const Sector = ({ sector, sectorSize, sectorNumber }) => {
-    let placeHeaders = [<th key={0}>Ряд/Место</th>];
+    let placeHeaders = [<th style={{ maxWidth: "4rem", minWidth: "4rem" }} key={0}>Ряд/Место</th>];
     for (let i = 0; i < sectorSize.cols; ++i) {
         placeHeaders.push(<th key={i + 1}>{i + 1}</th>);
     }
