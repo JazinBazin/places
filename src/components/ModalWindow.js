@@ -1,15 +1,8 @@
 import React from "react";
+import "../styles/modal.css";
 
 const ModalWindow = ({ title, text, handleCloseClicked }) => (
-    <div style={{
-        position: "fixed",
-        zIndex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.4)",
-        left: 0,
-        top: 0,
-        width: "100%",
-        height: "100%",
-    }}>
+    <div className="modal-window">
         <div className="row justify-content-center mt-3">
             <div className="col-auto">
                 <div className="card">

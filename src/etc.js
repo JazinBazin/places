@@ -3,7 +3,6 @@ import PlacesForm from "./PlacesForm";
 import SearchForm from "./SearchForm";
 import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
-import TextInputModal from "./TextInputModal";
 
 class Places extends React.Component {
     constructor(props) {
@@ -25,8 +24,7 @@ class Places extends React.Component {
             row: "",
             place: "",
             searchName: "",
-            modalWindow: null,
-            textInputWindow: null,
+            modalWindow: null
         };
     }
 
@@ -179,16 +177,10 @@ class Places extends React.Component {
         }
     }
 
-    handlePlaceClicked = (sector, row, place) => {
-        this.showTextInputWindow();
-        // this.showModalWindow("", `${sector} ${row} ${place}`);
-    }
-
     render() {
         return (
             <React.Fragment>
                 {this.state.modalWindow}
-                {this.state.textInputWindow}
                 <div className="row justify-content-center">
                     <div className="col-4 border rounded p-2 mt-2 mr-2">
                         <PlacesForm
@@ -208,28 +200,18 @@ class Places extends React.Component {
                             handleSearchButtonClicked={this.handleSearchButtonClicked} />
                     </div>
                 </div>
-                <div className="row mt-4">
-                    <div style={{ width: "24%", marginLeft: "1%", marginRight: "1%" }}>
-                        <Sector
-                            sector={this.state.sectors[0]}
-                            sectorSize={this.state.sectorSizes[0]}
-                            sectorNumber={1}
-                            onPlaceClick={this.handlePlaceClicked} />
+                <div className="row flex-nowrap mt-4">
+                    <div className="col">
+                        {this.state.sectors.map((sector, index) => (
+                            <div key={index} className="flex-fill ml-2 mr-2">
+                                <Sector
+                                    sector={sector}
+                                    sectorSize={this.state.sectorSizes[index]}
+                                    sectorNumber={index + 1} />
+                            </div>
+                        ))}
                     </div>
-                    <div style={{ width: "46%", marginLeft: "1%", marginRight: "1%" }}>
-                        <Sector
-                            sector={this.state.sectors[1]}
-                            sectorSize={this.state.sectorSizes[1]}
-                            sectorNumber={2}
-                            onPlaceClick={this.handlePlaceClicked} />
-                    </div>
-                    <div style={{ width: "24%", marginLeft: "1%", marginRight: "1%" }}>
-                        <Sector
-                            sector={this.state.sectors[2]}
-                            sectorSize={this.state.sectorSizes[2]}
-                            sectorNumber={3}
-                            onPlaceClick={this.handlePlaceClicked} />
-                    </div>
+
                 </div>
             </React.Fragment >
         );
@@ -348,19 +330,114 @@ class Places extends React.Component {
 
     handleModalWindowClose = () => this.setState({ modalWindow: null });
 
-    showTextInputWindow = () => {
-        this.setState({
-            textInputWindow: <TextInputModal
-                title="Фамилия:"
-                handleCloseClicked={this.handleTextInputWindowClose} />
-        });
-    }
-
-    handleTextInputWindowClose = () => this.setState({ textInputWindow: null });
-
     createSector = (rows, cols) => {
         return Array(rows).fill().map(() => Array(cols).fill());
     }
 }
 
 export default Places;
+
+import React from "react";
+
+const Sector = ({ sector, sectorSize, sectorNumber }) => {
+    let placeHeaders = [<th style={{ maxWidth: "4rem", minWidth: "4rem" }} key={0}>Ряд/Место</th>];
+    for (let i = 0; i < sectorSize.cols; ++i) {
+        placeHeaders.push(<th key={i + 1}>{i + 1}</th>);
+    }
+
+    let places = [];
+    for (let i = 0; i < sectorSize.rows; ++i) {
+        let row = [<th key={0}>{i + 1}</th>]
+        for (let j = 0; j < sectorSize.cols; ++j) {
+            const person = sector[i][j] ? sector[i][j] : "";
+            row.push(<td style={{ wordWrap: "break-word", flexGrow: "0", flexShrink: "0" }} key={j + 1}>{person}</td>);
+        }
+        places.push(<tr key={i}>{row}</tr>);
+    }
+
+    return (
+        <React.Fragment>
+            <h2 className="text-center">Сектор {sectorNumber}</h2>
+            <div class="table-responsive">
+                <table className="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            {placeHeaders}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {places}
+                    </tbody>
+                </table>
+            </div>
+        </React.Fragment>
+    );
+};
+
+export default Sector;
+
+<td key={j + 1}>
+    <span className="table-cell">
+        {person}
+    </span>
+</td>
+
+/*
+
+import React from "react";
+
+const Sector = ({ sector, sectorSize, sectorNumber }) => {
+    let placeHeaders = [<th style={{ border: "1px solid black" }} key={0}></th>];
+    for (let i = 0; i < sectorSize.cols; ++i) {
+        placeHeaders.push(<th style={{ border: "1px solid black" }} key={i + 1}>{i + 1}</th>);
+    }
+
+    let places = [];
+    for (let i = 0; i < sectorSize.rows; ++i) {
+        let row = [<th style={{ border: "1px solid black" }} key={0}>{i + 1}</th>]
+        for (let j = 0; j < sectorSize.cols; ++j) {
+            const person = sector[i][j] ? sector[i][j] : "";
+            row.push(<td style={{
+                border: "1px solid black",
+            }} key={j + 1}>
+                <span style={{
+                    display: "block",
+                    height: "5em",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                }}>
+                    {person}
+                </span>
+
+            </td>);
+        }
+        places.push(<tr style={{ height: "5em" }} key={i}>{row}</tr>);
+    }
+
+    return (
+        <React.Fragment>
+            <h2 className="text-center">Сектор {sectorNumber}</h2>
+            <table style={{
+                tableLayout: "fixed",
+                fontSize: "0.7em",
+                border: "1px solid black",
+                borderCollapse: "collapse",
+                width: "100%",
+                textAlign: "center"
+            }}>
+                <thead>
+                    <tr>
+                        {placeHeaders}
+                    </tr>
+                </thead>
+                <tbody>
+                    {places}
+                </tbody>
+            </table>
+        </React.Fragment>
+    );
+};
+
+export default Sector;
+
+*/
