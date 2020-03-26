@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/upload.css";
 
 const PlacesForm = ({
     name, handleNameChange,
@@ -9,7 +10,9 @@ const PlacesForm = ({
     handleRemovePersonButtonClicked,
     handleClearPlaceButtonClicked,
     handleReplaceButtonClicked,
-    handleResetButtonClicked
+    handleResetButtonClicked,
+    handleSaveButtonClicked,
+    handleLoadButtonClicked
 }) => (
         <form>
             <h4 className="text-center">Распределение мест</h4>
@@ -58,34 +61,44 @@ const PlacesForm = ({
                         type="button"
                         onClick={handleAddButtonClicked}>
                         Добавить
-                </button>
+                    </button>
                     <button
                         className="btn btn-primary btn-sm mr-2"
                         type="button"
                         onClick={handleRemovePersonButtonClicked}>
                         Удалить участника
-                </button>
+                    </button>
                     <button
                         className="btn btn-primary btn-sm mr-2"
                         type="button"
                         onClick={handleClearPlaceButtonClicked}>
                         Освободить место
-                </button>
+                    </button>
                     <button
                         className="btn btn-primary btn-sm mr-2"
                         type="button"
                         onClick={handleReplaceButtonClicked}>
                         Заменить
-                </button>
+                    </button>
                     <button
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-primary btn-sm mr-2"
                         type="reset"
                         onClick={handleResetButtonClicked}>
                         Очистить
-                </button>
+                    </button>
+                    <button
+                        className="btn btn-primary btn-sm mr-2"
+                        type="reset"
+                        onClick={handleSaveButtonClicked}>
+                        Сохранить
+                    </button>
+                    <div class="upload-btn-wrapper">
+                        <button class="btn btn-primary btn-sm">Загрузить</button>
+                        <input type="file" accept="application/json" onChange={handleLoadButtonClicked} />
+                    </div>
                 </div>
             </div>
         </form>
     );
 
-    export default PlacesForm;
+export default PlacesForm;

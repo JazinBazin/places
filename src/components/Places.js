@@ -4,22 +4,20 @@ import SearchForm from "./SearchForm";
 import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
 import NameInputModal from "./NameInputModal";
+import FileSaver from 'file-saver';
+
+// https://javascript.ru/forum/misc/55408-filereader-i-filewriter.html
 
 class Places extends React.Component {
     constructor(props) {
         super(props);
-        const sectorSizes = [
+
+        this.sectorSizes = [
             { rows: 8, cols: 7 },
             { rows: 8, cols: 13 },
             { rows: 7, cols: 7 }];
 
         this.state = {
-            mapNamesToPlaces: {},
-            sectors: [
-                this.createSector(sectorSizes[0].rows, sectorSizes[0].cols),
-                this.createSector(sectorSizes[1].rows, sectorSizes[1].cols),
-                this.createSector(sectorSizes[2].rows, sectorSizes[2].cols)],
-            sectorSizes: sectorSizes,
             name: "",
             sector: "",
             row: "",
@@ -27,6 +25,11 @@ class Places extends React.Component {
             searchName: "",
             modalWindow: null,
             nameInputModal: null,
+            mapNamesToPlaces: {},
+            sectors: [
+                this.createSector(this.sectorSizes[0].rows, this.sectorSizes[0].cols),
+                this.createSector(this.sectorSizes[1].rows, this.sectorSizes[1].cols),
+                this.createSector(this.sectorSizes[2].rows, this.sectorSizes[2].cols)],
         };
     }
 
@@ -52,79 +55,19 @@ class Places extends React.Component {
         if (this.checkName() && this.checkSector() &&
             this.checkRow() && this.checkPlace() &&
             this.checkPlaceTaken()) {
-            this.setState(state => ({
-                mapNamesToPlaces: {
-                    [state.name]: {
-                        "sector": state.sector - 1,
-                        "row": state.row - 1,
-                        "place": state.place - 1
-                    },
-                    ...state.mapNamesToPlaces
-                },
-                sectors: state.sectors.map((sector, index) => {
-                    if (index == state.sector - 1)
-                        return sector.map((row, index) => {
-                            if (index == state.row - 1)
-                                return row.map((name, index) => {
-                                    if (index == state.place - 1)
-                                        return state.name;
-                                    else return name;
-                                });
-                            else return row;
-                        })
-                    else return sector;
-                })
-            }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+            this.addPerson();
         }
     };
 
     handleRemovePersonButtonClicked = () => {
         if (this.checkName() && this.checkPersonExists()) {
-            this.setState(state => ({
-                mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
-                    .reduce((result, key) => {
-                        if (key !== state.name)
-                            result[key] = state.mapNamesToPlaces[key];
-                        return result;
-                    }, {}),
-                sectors: state.sectors.map(sector => {
-                    return sector.map(row => {
-                        return row.map(name => {
-                            if (name == state.name)
-                                return undefined;
-                            else return name;
-                        })
-                    })
-                })
-            }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+            this.removePerson();
         }
     }
 
     handleClearPlaceButtonClicked = () => {
         if (this.checkSector() && this.checkRow() && this.checkPlace() && this.checkPlaceEmpty()) {
-            this.setState(state => ({
-                mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
-                    .reduce((result, name) => {
-                        if (state.mapNamesToPlaces[name].sector != state.sector - 1 ||
-                            state.mapNamesToPlaces[name].row != state.row - 1 ||
-                            state.mapNamesToPlaces[name].place != state.place - 1)
-                            result[name] = state.mapNamesToPlaces[name];
-                        return result;
-                    }, {}),
-                sectors: state.sectors.map((sector, index) => {
-                    if (index == state.sector - 1)
-                        return sector.map((row, index) => {
-                            if (index == state.row - 1)
-                                return row.map((name, index) => {
-                                    if (index == state.place - 1)
-                                        return undefined;
-                                    else return name;
-                                });
-                            else return row;
-                        })
-                    else return sector;
-                })
-            }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+            this.clearPlace();
         }
     }
 
@@ -132,31 +75,7 @@ class Places extends React.Component {
         if (this.checkName() && this.checkSector() &&
             this.checkRow() && this.checkPlace() &&
             this.checkPlaceEmpty()) {
-            this.setState(state => ({
-                mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
-                    .reduce((result, name) => {
-                        if (state.mapNamesToPlaces[name].sector == state.sector - 1 &&
-                            state.mapNamesToPlaces[name].row == state.row - 1 &&
-                            state.mapNamesToPlaces[name].place == state.place - 1)
-                            result[state.name] = state.mapNamesToPlaces[name];
-                        else
-                            result[name] = state.mapNamesToPlaces[name];
-                        return result;
-                    }, {}),
-                sectors: state.sectors.map((sector, index) => {
-                    if (index == state.sector - 1)
-                        return sector.map((row, index) => {
-                            if (index == state.row - 1)
-                                return row.map((name, index) => {
-                                    if (index == state.place - 1)
-                                        return state.name;
-                                    else return name;
-                                });
-                            else return row;
-                        })
-                    else return sector;
-                })
-            }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+            this.replacePerson();
         }
     }
 
@@ -179,13 +98,36 @@ class Places extends React.Component {
         }
     }
 
+    handleSaveButtonClicked = () => {
+        const data = {
+            "mapNamesToPlaces": this.state.mapNamesToPlaces,
+            "sectors": this.state.sectors
+        };
+
+        const blob = new Blob([JSON.stringify(data)], { type: "application/json;charset=utf-8" });
+        FileSaver.saveAs(blob, "data.json");
+    }
+
+    handleLoadButtonClicked = (e) => {
+        const file = e.target.files[0];
+        let fileReader = new FileReader();
+        fileReader.onload = () => {
+            const data = JSON.parse(fileReader.result);
+            this.setState({
+                mapNamesToPlaces: data.mapNamesToPlaces,
+                sectors: data.sectors
+            });
+        }
+        fileReader.readAsText(file, "UTF-8");
+    }
+
     render() {
         return (
             <React.Fragment>
                 {this.state.modalWindow}
                 {this.state.nameInputModal}
                 <div className="row justify-content-center">
-                    <div className="col-4 border rounded p-2 mt-2 mr-2">
+                    <div className="col-6 border rounded p-2 mt-2 mr-2">
                         <PlacesForm
                             name={this.state.name} handleNameChange={this.handleNameChange}
                             row={this.state.row} handleRowChange={this.handleRowChange}
@@ -195,7 +137,9 @@ class Places extends React.Component {
                             handleRemovePersonButtonClicked={this.handleRemovePersonButtonClicked}
                             handleClearPlaceButtonClicked={this.handleClearPlaceButtonClicked}
                             handleReplaceButtonClicked={this.handleReplaceButtonClicked}
-                            handleResetButtonClicked={this.handleResetButtonClicked} />
+                            handleResetButtonClicked={this.handleResetButtonClicked}
+                            handleSaveButtonClicked={this.handleSaveButtonClicked}
+                            handleLoadButtonClicked={this.handleLoadButtonClicked} />
                     </div>
                     <div className="col-3">
                         <SearchForm searchName={this.state.searchName}
@@ -207,21 +151,21 @@ class Places extends React.Component {
                     <div style={{ width: "24%", marginLeft: "1%", marginRight: "1%" }}>
                         <Sector
                             sector={this.state.sectors[0]}
-                            sectorSize={this.state.sectorSizes[0]}
+                            sectorSize={this.sectorSizes[0]}
                             sectorNumber={1}
                             onPlaceClick={this.handlePlaceClicked} />
                     </div>
                     <div style={{ width: "46%", marginLeft: "1%", marginRight: "1%" }}>
                         <Sector
                             sector={this.state.sectors[1]}
-                            sectorSize={this.state.sectorSizes[1]}
+                            sectorSize={this.sectorSizes[1]}
                             sectorNumber={2}
                             onPlaceClick={this.handlePlaceClicked} />
                     </div>
                     <div style={{ width: "24%", marginLeft: "1%", marginRight: "1%" }}>
                         <Sector
                             sector={this.state.sectors[2]}
-                            sectorSize={this.state.sectorSizes[2]}
+                            sectorSize={this.sectorSizes[2]}
                             sectorNumber={3}
                             onPlaceClick={this.handlePlaceClicked} />
                     </div>
@@ -260,10 +204,10 @@ class Places extends React.Component {
             this.showModalWindow("Распределение мест", "Введите номер ряда");
             return false;
         }
-        if (row > this.state.sectorSizes[sector - 1].rows) {
+        if (row > this.sectorSizes[sector - 1].rows) {
             this.showModalWindow("Распределение мест",
                 `Номер ряда в секторе ${sector} должен быть в диапазоне от 1
-                 до ${this.state.sectorSizes[sector - 1].rows} включительно`);
+                 до ${this.sectorSizes[sector - 1].rows} включительно`);
             return false;
         }
         return true;
@@ -276,10 +220,10 @@ class Places extends React.Component {
             this.showModalWindow("Распределение мест", "Введите номер места");
             return false;
         }
-        if (place > this.state.sectorSizes[sector - 1].cols) {
+        if (place > this.sectorSizes[sector - 1].cols) {
             this.showModalWindow("Распределение мест",
                 `Номер места в секторе ${sector} должен быть в диапазоне от 1
-                 до ${this.state.sectorSizes[sector - 1].cols} включительно`);
+                 до ${this.sectorSizes[sector - 1].cols} включительно`);
             return false;
         }
         return true;
@@ -364,66 +308,118 @@ class Places extends React.Component {
         this.setState({
             nameInputModal: null,
             name: name
+        }, () => {
+            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === undefined)
+                this.addPerson();
+            else
+                this.replacePerson();
         });
-        // this.forceUpdate();
-        // if (this.state.sectors[sector - 1][row - 1][place - 1] !== undefined) {
-        //     this.setState(state => ({
-        //         mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
-        //             .reduce((result, name) => {
-        //                 if (state.mapNamesToPlaces[name].sector == state.sector - 1 &&
-        //                     state.mapNamesToPlaces[name].row == state.row - 1 &&
-        //                     state.mapNamesToPlaces[name].place == state.place - 1)
-        //                     result[state.name] = state.mapNamesToPlaces[name];
-        //                 else
-        //                     result[name] = state.mapNamesToPlaces[name];
-        //                 return result;
-        //             }, {}),
-        //         sectors: state.sectors.map((sector, index) => {
-        //             if (index == state.sector - 1)
-        //                 return sector.map((row, index) => {
-        //                     if (index == state.row - 1)
-        //                         return row.map((name, index) => {
-        //                             if (index == state.place - 1)
-        //                                 return state.name;
-        //                             else return name;
-        //                         });
-        //                     else return row;
-        //                 })
-        //             else return sector;
-        //         })
-        //     }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
-        // }
-        // else {
-        //     this.setState(state => ({
-        //         mapNamesToPlaces: {
-        //             [state.name]: {
-        //                 "sector": state.sector - 1,
-        //                 "row": state.row - 1,
-        //                 "place": state.place - 1
-        //             },
-        //             ...state.mapNamesToPlaces
-        //         },
-        //         sectors: state.sectors.map((sector, index) => {
-        //             if (index == state.sector - 1)
-        //                 return sector.map((row, index) => {
-        //                     if (index == state.row - 1)
-        //                         return row.map((name, index) => {
-        //                             if (index == state.place - 1)
-        //                                 return state.name;
-        //                             else return name;
-        //                         });
-        //                     else return row;
-        //                 })
-        //             else return sector;
-        //         })
-        //     }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
-        // }
     }
 
     handleNameInputModalClose = () => this.setState({ nameInputModal: null });
 
     createSector = (rows, cols) => {
         return Array(rows).fill().map(() => Array(cols).fill());
+    }
+
+    addPerson = () => {
+        this.setState(state => ({
+            mapNamesToPlaces: {
+                [state.name]: {
+                    "sector": state.sector - 1,
+                    "row": state.row - 1,
+                    "place": state.place - 1
+                },
+                ...state.mapNamesToPlaces
+            },
+            sectors: state.sectors.map((sector, index) => {
+                if (index == state.sector - 1)
+                    return sector.map((row, index) => {
+                        if (index == state.row - 1)
+                            return row.map((name, index) => {
+                                if (index == state.place - 1)
+                                    return state.name;
+                                else return name;
+                            });
+                        else return row;
+                    })
+                else return sector;
+            })
+        }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+    }
+
+    replacePerson = () => {
+        this.setState(state => ({
+            mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
+                .reduce((result, name) => {
+                    if (state.mapNamesToPlaces[name].sector == state.sector - 1 &&
+                        state.mapNamesToPlaces[name].row == state.row - 1 &&
+                        state.mapNamesToPlaces[name].place == state.place - 1)
+                        result[state.name] = state.mapNamesToPlaces[name];
+                    else
+                        result[name] = state.mapNamesToPlaces[name];
+                    return result;
+                }, {}),
+            sectors: state.sectors.map((sector, index) => {
+                if (index == state.sector - 1)
+                    return sector.map((row, index) => {
+                        if (index == state.row - 1)
+                            return row.map((name, index) => {
+                                if (index == state.place - 1)
+                                    return state.name;
+                                else return name;
+                            });
+                        else return row;
+                    })
+                else return sector;
+            })
+        }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+    }
+
+    removePerson = () => {
+        this.setState(state => ({
+            mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
+                .reduce((result, key) => {
+                    if (key !== state.name)
+                        result[key] = state.mapNamesToPlaces[key];
+                    return result;
+                }, {}),
+            sectors: state.sectors.map(sector => {
+                return sector.map(row => {
+                    return row.map(name => {
+                        if (name == state.name)
+                            return undefined;
+                        else return name;
+                    })
+                })
+            })
+        }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+    }
+
+    clearPlace = () => {
+        this.setState(state => ({
+            mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
+                .reduce((result, name) => {
+                    if (state.mapNamesToPlaces[name].sector != state.sector - 1 ||
+                        state.mapNamesToPlaces[name].row != state.row - 1 ||
+                        state.mapNamesToPlaces[name].place != state.place - 1)
+                        result[name] = state.mapNamesToPlaces[name];
+                    return result;
+                }, {}),
+            sectors: state.sectors.map((sector, index) => {
+                if (index == state.sector - 1)
+                    return sector.map((row, index) => {
+                        if (index == state.row - 1)
+                            return row.map((name, index) => {
+                                if (index == state.place - 1)
+                                    return undefined;
+                                else return name;
+                            });
+                        else return row;
+                    })
+                else return sector;
+            })
+        }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
     }
 }
 
