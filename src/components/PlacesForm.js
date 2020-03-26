@@ -16,7 +16,7 @@ const PlacesForm = ({
             <div className="form-row mt-2">
                 <div className="col">
                     <div className="form-group">
-                        <label>Фамилия:</label>
+                        <label>Участник:</label>
                         <input
                             className="form-control"
                             type="text"

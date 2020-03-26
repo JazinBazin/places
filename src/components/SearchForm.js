@@ -5,14 +5,14 @@ const SearchForm = ({
     handleSearchButtonClicked
 }) => (
         <form className="border rounded p-2 mt-2">
-            <h4 className="text-center">Поиск по фамилии</h4>
+            <h4 className="text-center">Поиск по участнику</h4>
             <div className="form-row mt-2">
                 <div className="col">
                     <input
                         className="form-control"
                         type="text"
                         value={searchName}
-                        placeholder="Фамилия"
+                        placeholder="Участник"
                         onChange={handleSearchNameChanged} />
                 </div>
                 <div className="col-auto">

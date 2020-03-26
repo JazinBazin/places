@@ -3,7 +3,7 @@ import PlacesForm from "./PlacesForm";
 import SearchForm from "./SearchForm";
 import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
-import TextInputModal from "./TextInputModal";
+import NameInputModal from "./NameInputModal";
 
 class Places extends React.Component {
     constructor(props) {
@@ -26,7 +26,7 @@ class Places extends React.Component {
             place: "",
             searchName: "",
             modalWindow: null,
-            textInputWindow: null,
+            nameInputModal: null,
         };
     }
 
@@ -174,21 +174,16 @@ class Places extends React.Component {
     handleSearchButtonClicked = () => {
         if (this.checkSearchName() && this.checkPersonExists()) {
             const personPlace = this.state.mapNamesToPlaces[this.state.searchName];
-            this.showModalWindow("Поиск по фамилии",
+            this.showModalWindow("Поиск по участнику",
                 `${this.state.searchName}: сектор ${personPlace.sector + 1} ряд ${personPlace.row + 1} место ${personPlace.place + 1}`);
         }
-    }
-
-    handlePlaceClicked = (sector, row, place) => {
-        this.showTextInputWindow();
-        // this.showModalWindow("", `${sector} ${row} ${place}`);
     }
 
     render() {
         return (
             <React.Fragment>
                 {this.state.modalWindow}
-                {this.state.textInputWindow}
+                {this.state.nameInputModal}
                 <div className="row justify-content-center">
                     <div className="col-4 border rounded p-2 mt-2 mr-2">
                         <PlacesForm
@@ -238,7 +233,7 @@ class Places extends React.Component {
     checkName = () => {
         const name = this.state.name;
         if (name.length == 0) {
-            this.showModalWindow("Распределение мест", "Введите фамилию");
+            this.showModalWindow("Распределение мест", "Введите участника");
             return false;
         }
         return true;
@@ -324,7 +319,7 @@ class Places extends React.Component {
     checkSearchName = () => {
         const name = this.state.searchName;
         if (name.length == 0) {
-            this.showModalWindow("Распределение мест", "Введите фамилию для поиска");
+            this.showModalWindow("Распределение мест", "Введите участника для поиска");
             return false;
         }
         return true;
@@ -348,15 +343,84 @@ class Places extends React.Component {
 
     handleModalWindowClose = () => this.setState({ modalWindow: null });
 
-    showTextInputWindow = () => {
+    handlePlaceClicked = (sector, row, place) => {
         this.setState({
-            textInputWindow: <TextInputModal
-                title="Фамилия:"
-                handleCloseClicked={this.handleTextInputWindowClose} />
+            sector: sector + 1,
+            row: row + 1,
+            place: place + 1
+        });
+        this.showNameInputModal();
+    }
+
+    showNameInputModal = () => {
+        this.setState({
+            nameInputModal: <NameInputModal
+                handleNameEntered={this.handleNameInputReturnData}
+                handleCloseClicked={this.handleNameInputModalClose} />
         });
     }
 
-    handleTextInputWindowClose = () => this.setState({ textInputWindow: null });
+    handleNameInputReturnData = (name) => {
+        this.setState({
+            nameInputModal: null,
+            name: name
+        });
+        // this.forceUpdate();
+        // if (this.state.sectors[sector - 1][row - 1][place - 1] !== undefined) {
+        //     this.setState(state => ({
+        //         mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
+        //             .reduce((result, name) => {
+        //                 if (state.mapNamesToPlaces[name].sector == state.sector - 1 &&
+        //                     state.mapNamesToPlaces[name].row == state.row - 1 &&
+        //                     state.mapNamesToPlaces[name].place == state.place - 1)
+        //                     result[state.name] = state.mapNamesToPlaces[name];
+        //                 else
+        //                     result[name] = state.mapNamesToPlaces[name];
+        //                 return result;
+        //             }, {}),
+        //         sectors: state.sectors.map((sector, index) => {
+        //             if (index == state.sector - 1)
+        //                 return sector.map((row, index) => {
+        //                     if (index == state.row - 1)
+        //                         return row.map((name, index) => {
+        //                             if (index == state.place - 1)
+        //                                 return state.name;
+        //                             else return name;
+        //                         });
+        //                     else return row;
+        //                 })
+        //             else return sector;
+        //         })
+        //     }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+        // }
+        // else {
+        //     this.setState(state => ({
+        //         mapNamesToPlaces: {
+        //             [state.name]: {
+        //                 "sector": state.sector - 1,
+        //                 "row": state.row - 1,
+        //                 "place": state.place - 1
+        //             },
+        //             ...state.mapNamesToPlaces
+        //         },
+        //         sectors: state.sectors.map((sector, index) => {
+        //             if (index == state.sector - 1)
+        //                 return sector.map((row, index) => {
+        //                     if (index == state.row - 1)
+        //                         return row.map((name, index) => {
+        //                             if (index == state.place - 1)
+        //                                 return state.name;
+        //                             else return name;
+        //                         });
+        //                     else return row;
+        //                 })
+        //             else return sector;
+        //         })
+        //     }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+        // }
+    }
+
+    handleNameInputModalClose = () => this.setState({ nameInputModal: null });
 
     createSector = (rows, cols) => {
         return Array(rows).fill().map(() => Array(cols).fill());
