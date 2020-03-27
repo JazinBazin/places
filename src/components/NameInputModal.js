@@ -8,6 +8,11 @@ class NameInputModal extends React.Component {
             name: "",
             errorMessage: ""
         }
+        this.inputNameField = React.createRef();
+    }
+
+    componentDidMount() {
+        this.inputNameField.current.focus();
     }
 
     handleNameChange = e => this.setState({ name: e.target.value });
@@ -22,6 +27,12 @@ class NameInputModal extends React.Component {
         this.props.handleNameEntered(this.state.name);
     }
 
+    handleKeyPressed = e => {
+        if (e.key == "Enter") {
+            this.handleOkClicked();
+        }
+    }
+
     render() {
         return (
             <div className="modal-window">
@@ -31,10 +42,12 @@ class NameInputModal extends React.Component {
                             <div className="card-body">
                                 <label>Участник:</label>
                                 <input
+                                    ref={this.inputNameField}
                                     className="form-control"
                                     type="text"
                                     value={this.state.name}
                                     onChange={this.handleNameChange}
+                                    onKeyPress={this.handleKeyPressed}
                                 />
                                 <span style={{ color: "red" }}>{this.state.errorMessage}</span>
                             </div>

@@ -1,5 +1,4 @@
 import React from "react";
-import "../styles/upload.css";
 
 const PlacesForm = ({
     name, handleNameChange,
@@ -92,10 +91,9 @@ const PlacesForm = ({
                         onClick={handleSaveButtonClicked}>
                         Сохранить
                     </button>
-                    <div class="upload-btn-wrapper">
-                        <button class="btn btn-primary btn-sm">Загрузить</button>
-                        <input type="file" accept="application/json" onChange={handleLoadButtonClicked} />
-                    </div>
+                    <label className="btn btn-primary btn-sm m-0">
+                        Загрузить <input type="file" accept="application/json" onChange={handleLoadButtonClicked} hidden />
+                    </label>
                 </div>
             </div>
         </form>

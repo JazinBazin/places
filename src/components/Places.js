@@ -4,9 +4,6 @@ import SearchForm from "./SearchForm";
 import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
 import NameInputModal from "./NameInputModal";
-import FileSaver from 'file-saver';
-
-// https://javascript.ru/forum/misc/55408-filereader-i-filewriter.html
 
 class Places extends React.Component {
     constructor(props) {
@@ -105,7 +102,7 @@ class Places extends React.Component {
         };
 
         const blob = new Blob([JSON.stringify(data)], { type: "application/json;charset=utf-8" });
-        FileSaver.saveAs(blob, "data.json");
+        this.saveTextAsFile(blob, "Места.json");
     }
 
     handleLoadButtonClicked = (e) => {
@@ -127,7 +124,7 @@ class Places extends React.Component {
                 {this.state.modalWindow}
                 {this.state.nameInputModal}
                 <div className="row justify-content-center">
-                    <div className="col-6 border rounded p-2 mt-2 mr-2">
+                    <div className="col-5 border rounded p-2 mt-2 mr-2">
                         <PlacesForm
                             name={this.state.name} handleNameChange={this.handleNameChange}
                             row={this.state.row} handleRowChange={this.handleRowChange}
@@ -320,6 +317,22 @@ class Places extends React.Component {
 
     createSector = (rows, cols) => {
         return Array(rows).fill().map(() => Array(cols).fill());
+    }
+
+    saveTextAsFile(blob, fileName) {
+        let downloadLink = document.createElement("a");
+        downloadLink.download = fileName;
+        downloadLink.innerHTML = "Сохранить";
+        if (window.webkitURL != null) {
+            downloadLink.href = window.webkitURL.createObjectURL(blob);
+        }
+        else {
+            downloadLink.href = window.URL.createObjectURL(blob);
+            downloadLink.onclick = (event) => document.body.removeChild(event.target);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+        }
+        downloadLink.click();
     }
 
     addPerson = () => {
