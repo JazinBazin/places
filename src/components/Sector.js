@@ -32,7 +32,7 @@ const Sector = ({ sector, sectorSize, sectorNumber, onPlaceClick }) => {
 
     return (
         <React.Fragment>
-            <h3 className="text-center">Сектор {sectorNumber}</h3>
+            <h4 className=" lead text-center">Сектор {sectorNumber}</h4>
             <table className="table-places">
                 <thead>
                     <tr>
