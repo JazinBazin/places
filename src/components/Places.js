@@ -4,6 +4,7 @@ import SearchForm from "./SearchForm";
 import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
 import NameInputModal from "./NameInputModal";
+import Presidium from "./Presidium";
 
 class Places extends React.Component {
     constructor(props) {
@@ -88,10 +89,10 @@ class Places extends React.Component {
     handleSearchNameChanged = e => this.setState({ searchName: e.target.value });
 
     handleSearchButtonClicked = () => {
-        if (this.checkSearchName() && this.checkPersonExists()) {
+        if (this.checkSearchName() && this.checkSearchPersonExists()) {
             const personPlace = this.state.mapNamesToPlaces[this.state.searchName];
             this.showModalWindow("Поиск по участнику",
-                `${this.state.searchName}: сектор ${personPlace.sector + 1} ряд ${personPlace.row + 1} место ${personPlace.place + 1}`);
+                `${this.state.searchName}: сектор ${personPlace.sector + 1}, ряд ${personPlace.row + 1}, место ${personPlace.place + 1}`);
         }
     }
 
@@ -145,21 +146,26 @@ class Places extends React.Component {
                     </div>
                 </div>
                 <div className="row mt-4">
-                    <div style={{ width: "24%", marginLeft: "1%", marginRight: "1%" }}>
+                    <div style={{ width: "24%", margin: "0 auto" }}>
+                        <Presidium placesCount={7} />
+                    </div>
+                </div>
+                <div className="row mt-4">
+                    <div style={{ width: "25%", marginLeft: "1%", marginRight: "0.5%" }}>
                         <Sector
                             sector={this.state.sectors[0]}
                             sectorSize={this.sectorSizes[0]}
                             sectorNumber={1}
                             onPlaceClick={this.handlePlaceClicked} />
                     </div>
-                    <div style={{ width: "46%", marginLeft: "1%", marginRight: "1%" }}>
+                    <div style={{ width: "45%", marginLeft: "1%", marginRight: "1%" }}>
                         <Sector
                             sector={this.state.sectors[1]}
                             sectorSize={this.sectorSizes[1]}
                             sectorNumber={2}
                             onPlaceClick={this.handlePlaceClicked} />
                     </div>
-                    <div style={{ width: "24%", marginLeft: "1%", marginRight: "1%" }}>
+                    <div style={{ width: "25%", marginLeft: "0.5%", marginRight: "1%" }}>
                         <Sector
                             sector={this.state.sectors[2]}
                             sectorSize={this.sectorSizes[2]}
@@ -251,6 +257,14 @@ class Places extends React.Component {
 
     checkPersonExists = () => {
         if (this.state.mapNamesToPlaces[this.state.name] === undefined) {
+            this.showModalWindow("Распределение мест", "Указанного участника не существует");
+            return;
+        }
+        return true;
+    }
+
+    checkSearchPersonExists = () => {
+        if (this.state.mapNamesToPlaces[this.state.searchName] === undefined) {
             this.showModalWindow("Распределение мест", "Указанного участника не существует");
             return;
         }

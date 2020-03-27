@@ -1,6 +1,6 @@
 import React from "react";
 import SectorCell from "./SectorCell";
-import "../styles/sector.css";
+import "../styles/table.css";
 
 
 const Sector = ({ sector, sectorSize, sectorNumber, onPlaceClick }) => {
@@ -21,7 +21,7 @@ const Sector = ({ sector, sectorSize, sectorNumber, onPlaceClick }) => {
                     row={i}
                     column={j}
                     onPlaceClick={onPlaceClick} >
-                    <span className="table-cell">
+                    <span className="table-places-cell">
                         {person}
                     </span>
                 </SectorCell>
@@ -32,8 +32,8 @@ const Sector = ({ sector, sectorSize, sectorNumber, onPlaceClick }) => {
 
     return (
         <React.Fragment>
-            <h2 className="text-center">Сектор {sectorNumber}</h2>
-            <table className="sector">
+            <h3 className="text-center">Сектор {sectorNumber}</h3>
+            <table className="table-places">
                 <thead>
                     <tr>
                         {placeHeaders}
