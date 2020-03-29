@@ -18,12 +18,13 @@ class NameInputModal extends React.Component {
     handleNameChange = e => this.setState({ name: e.target.value });
 
     handleOkClicked = () => {
-        if (this.state.name.length == 0) {
-            this.setState({
-                errorMessage: 'Заполните поле "Участник"'
-            })
-            return;
-        }
+        if (!this.props.allowEmpty)
+            if (!this.props.allowEmpty && this.state.name.length == 0) {
+                this.setState({
+                    errorMessage: 'Заполните поле "Участник"'
+                })
+                return;
+            }
         this.props.handleNameEntered(this.state.name);
     }
 

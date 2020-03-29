@@ -6,8 +6,8 @@ import ModalWindow from "./ModalWindow";
 import NameInputModal from "./NameInputModal";
 
 /*
-Возможность задать размер шрифта
-
+    1. Возможность задать размер шрифта
+    
 */
 
 class Places extends React.Component {
@@ -78,7 +78,7 @@ class Places extends React.Component {
     handleReplaceButtonClicked = () => {
         if (this.checkName() && this.checkSector() &&
             this.checkRow() && this.checkPlace() && this.checkPlaceEmpty()) {
-            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === undefined)
+            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === "")
                 this.addPerson();
             else
                 this.replacePerson();
@@ -143,6 +143,15 @@ class Places extends React.Component {
                 handleNameEntered={this.handleFillNameEntered}
                 handleCloseClicked={this.handleNameInputModalClose} />
         });
+    }
+
+    handlePlaceClicked = (name, sector, row, place) => {
+        this.setState({
+            name,
+            sector: sector + 1,
+            row: row + 1,
+            place: place + 1
+        }, () => this.showNameInputModal());
     }
 
     render() {
@@ -274,7 +283,7 @@ class Places extends React.Component {
         const sector = this.state.sector;
         const row = this.state.row;
         const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1] !== undefined) {
+        if (this.state.sectors[sector - 1][row - 1][place - 1].length != 0) {
             this.showModalWindow("Распределение мест",
                 `Узазанное место занято: ${this.state.sectors[sector - 1][row - 1][place - 1]}`);
             return false;
@@ -286,7 +295,7 @@ class Places extends React.Component {
         const sector = this.state.sector;
         const row = this.state.row;
         const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1] === undefined) {
+        if (this.state.sectors[sector - 1][row - 1][place - 1] .length == 0) {
             this.showModalWindow("Распределение мест",
                 "Узазанное место свободно");
             return false;
@@ -321,18 +330,10 @@ class Places extends React.Component {
 
     handleModalWindowClose = () => this.setState({ modalWindow: null });
 
-    handlePlaceClicked = (name, sector, row, place) => {
-        this.setState({
-            name,
-            sector: sector + 1,
-            row: row + 1,
-            place: place + 1
-        }, () => this.showNameInputModal());
-    }
-
     showNameInputModal = () => {
         this.setState({
             nameInputModal: <NameInputModal
+                allowEmpty
                 name={this.state.name}
                 handleNameEntered={this.handleNameInputReturnData}
                 handleCloseClicked={this.handleNameInputModalClose} />
@@ -344,8 +345,7 @@ class Places extends React.Component {
             nameInputModal: null,
             name: name
         }, () => {
-            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === undefined ||
-                this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === this.state.fillValue)
+            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1].length == 0)
                 this.addPerson();
             else
                 this.replacePerson();
@@ -370,7 +370,7 @@ class Places extends React.Component {
     handleNameInputModalClose = () => this.setState({ nameInputModal: null });
 
     createSector = (rows, cols) => {
-        return Array(rows).fill().map(() => Array(cols).fill());
+        return Array(rows).fill().map(() => Array(cols).fill(""));
     }
 
     saveTextAsFile(blob, fileName) {
@@ -431,7 +431,7 @@ class Places extends React.Component {
                 return sector.map(row => {
                     return row.map(name => {
                         if (name == state.name)
-                            return undefined;
+                            return "";
                         else return name;
                     })
                 })
@@ -447,7 +447,7 @@ class Places extends React.Component {
                         if (index == state.row - 1)
                             return row.map((name, index) => {
                                 if (index == state.place - 1)
-                                    return undefined;
+                                    return "";
                                 else return name;
                             });
                         else return row;
