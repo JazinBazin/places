@@ -5,7 +5,7 @@ class NameInputModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
+            name: props.name ? props.name : "",
             errorMessage: ""
         }
         this.inputNameField = React.createRef();

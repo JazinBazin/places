@@ -13,7 +13,8 @@ class Places extends React.Component {
         this.sectorSizes = [
             { rows: 8, cols: 7 },
             { rows: 8, cols: 13 },
-            { rows: 7, cols: 7 }];
+            { rows: 7, cols: 7 },
+            { rows: 1, cols: 7 }];
 
         this.state = {
             name: "",
@@ -27,7 +28,8 @@ class Places extends React.Component {
             sectors: [
                 this.createSector(this.sectorSizes[0].rows, this.sectorSizes[0].cols),
                 this.createSector(this.sectorSizes[1].rows, this.sectorSizes[1].cols),
-                this.createSector(this.sectorSizes[2].rows, this.sectorSizes[2].cols)],
+                this.createSector(this.sectorSizes[2].rows, this.sectorSizes[2].cols),
+                this.createSector(this.sectorSizes[3].rows, this.sectorSizes[3].cols)],
         };
     }
 
@@ -147,11 +149,17 @@ class Places extends React.Component {
                 </div>
                 <div className="row mt-4">
                     <div style={{ width: "24%", margin: "0 auto" }}>
-                        <Presidium placesCount={7} />
+                        <h3 className="text-center">Президиум</h3>
+                        <Sector
+                            sector={this.state.sectors[3]}
+                            sectorSize={this.sectorSizes[3]}
+                            sectorNumber={4}
+                            onPlaceClick={this.handlePlaceClicked} />
                     </div>
                 </div>
-                <div className="row mt-4">
+                <div className="row mt-4 mb-3">
                     <div style={{ width: "25%", marginLeft: "1%", marginRight: "0.5%" }}>
+                        <h4 className="lead text-center">Сектор 1</h4>
                         <Sector
                             sector={this.state.sectors[0]}
                             sectorSize={this.sectorSizes[0]}
@@ -159,6 +167,7 @@ class Places extends React.Component {
                             onPlaceClick={this.handlePlaceClicked} />
                     </div>
                     <div style={{ width: "45%", marginLeft: "1%", marginRight: "1%" }}>
+                        <h4 className="lead text-center">Сектор 2</h4>
                         <Sector
                             sector={this.state.sectors[1]}
                             sectorSize={this.sectorSizes[1]}
@@ -166,6 +175,7 @@ class Places extends React.Component {
                             onPlaceClick={this.handlePlaceClicked} />
                     </div>
                     <div style={{ width: "25%", marginLeft: "0.5%", marginRight: "1%" }}>
+                        <h4 className="lead text-center">Сектор 3</h4>
                         <Sector
                             sector={this.state.sectors[2]}
                             sectorSize={this.sectorSizes[2]}
@@ -192,7 +202,7 @@ class Places extends React.Component {
             this.showModalWindow("Распределение мест", "Введите номер сектора");
             return false;
         }
-        if (sector > 3) {
+        if (sector > this.state.sectors.length) {
             this.showModalWindow("Распределение мест",
                 "Номер сектора должен быть в диапазоне от 1 до 3 включительно");
             return false;
@@ -298,18 +308,20 @@ class Places extends React.Component {
 
     handleModalWindowClose = () => this.setState({ modalWindow: null });
 
-    handlePlaceClicked = (sector, row, place) => {
+    handlePlaceClicked = (name, sector, row, place) => {
         this.setState({
+            name,
             sector: sector + 1,
             row: row + 1,
             place: place + 1
-        });
-        this.showNameInputModal();
+        }, () => this.showNameInputModal());
+
     }
 
     showNameInputModal = () => {
         this.setState({
             nameInputModal: <NameInputModal
+                name={this.state.name}
                 handleNameEntered={this.handleNameInputReturnData}
                 handleCloseClicked={this.handleNameInputModalClose} />
         });
