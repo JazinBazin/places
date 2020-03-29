@@ -20,12 +20,9 @@ class Places extends React.Component {
             { rows: 7, cols: 7 },
             { rows: 1, cols: 7 }];
 
-        this.emptyPlaces = {
-            mapNamesToPlaces: {},
-            sectors: this.sectorSizes.map(sectorSize => {
-                return this.createSector(sectorSize.rows, sectorSize.cols)
-            }),
-        }
+        this.emptySectors = this.sectorSizes.map(sectorSize => {
+            return this.createSector(sectorSize.rows, sectorSize.cols)
+        })
 
         this.state = {
             name: "",
@@ -33,11 +30,10 @@ class Places extends React.Component {
             row: "",
             place: "",
             searchName: "",
-            prevFillValue: null,
             fillValue: "Оператор НР",
             modalWindow: null,
             nameInputModal: null,
-            ...this.emptyPlaces
+            sectors: this.emptySectors,
         };
     }
 
@@ -68,7 +64,7 @@ class Places extends React.Component {
     };
 
     handleRemovePersonButtonClicked = () => {
-        if (this.checkName() && this.checkPersonExists()) {
+        if (this.checkName()) {
             this.removePerson();
         }
     }
@@ -81,9 +77,8 @@ class Places extends React.Component {
 
     handleReplaceButtonClicked = () => {
         if (this.checkName() && this.checkSector() &&
-            this.checkRow() && this.checkPlace()) {
-            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === undefined ||
-                this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === this.state.fillValue)
+            this.checkRow() && this.checkPlace() && this.checkPlaceEmpty()) {
+            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === undefined)
                 this.addPerson();
             else
                 this.replacePerson();
@@ -96,23 +91,33 @@ class Places extends React.Component {
             sector: "",
             row: "",
             place: "",
-            ...this.emptyPlaces
+            sectors: this.emptySectors
         });
     }
 
     handleSearchNameChanged = e => this.setState({ searchName: e.target.value });
 
     handleSearchButtonClicked = () => {
-        if (this.checkSearchName() && this.checkSearchPersonExists()) {
-            const personPlace = this.state.mapNamesToPlaces[this.state.searchName];
-            this.showModalWindow("Поиск по участнику",
-                `${this.state.searchName}: сектор ${personPlace.sector + 1}, ряд ${personPlace.row + 1}, место ${personPlace.place + 1}`);
+        if (this.checkSearchName()) {
+            const found = this.state.sectors.some(
+                (sector, sectorNumber) =>
+                    sector.some((row, rowNumber) =>
+                        row.some((name, placeNumber) => {
+                            if (name == this.state.searchName) {
+                                const message = sectorNumber == 3
+                                    ? `Президиум, место ${placeNumber + 1}`
+                                    : `Сектор ${sectorNumber + 1}, ряд ${rowNumber + 1}, место ${placeNumber + 1}`
+                                this.showModalWindow("Результат поиска", message);
+                                return true;
+                            }
+                        })));
+            if (!found)
+                this.showModalWindow("Результат поиска", "Указанный участник не найден");
         }
     }
 
     handleSaveButtonClicked = () => {
         const data = {
-            "mapNamesToPlaces": this.state.mapNamesToPlaces,
             "sectors": this.state.sectors
         };
 
@@ -126,7 +131,6 @@ class Places extends React.Component {
         fileReader.onload = () => {
             const data = JSON.parse(fileReader.result);
             this.setState({
-                mapNamesToPlaces: data.mapNamesToPlaces,
                 sectors: data.sectors
             });
         }
@@ -270,8 +274,7 @@ class Places extends React.Component {
         const sector = this.state.sector;
         const row = this.state.row;
         const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1] !== undefined &&
-            this.state.sectors[sector - 1][row - 1][place - 1] !== this.state.fillValue) {
+        if (this.state.sectors[sector - 1][row - 1][place - 1] !== undefined) {
             this.showModalWindow("Распределение мест",
                 `Узазанное место занято: ${this.state.sectors[sector - 1][row - 1][place - 1]}`);
             return false;
@@ -283,26 +286,10 @@ class Places extends React.Component {
         const sector = this.state.sector;
         const row = this.state.row;
         const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1] === undefined ||
-            this.state.sectors[sector - 1][row - 1][place - 1] === this.state.fillValue) {
-            this.showModalWindow("Распределение мест", "Узазанное место свободно");
+        if (this.state.sectors[sector - 1][row - 1][place - 1] === undefined) {
+            this.showModalWindow("Распределение мест",
+                "Узазанное место свободно");
             return false;
-        }
-        return true;
-    }
-
-    checkPersonExists = () => {
-        if (this.state.mapNamesToPlaces[this.state.name] === undefined) {
-            this.showModalWindow("Распределение мест", "Указанного участника не существует");
-            return;
-        }
-        return true;
-    }
-
-    checkSearchPersonExists = () => {
-        if (this.state.mapNamesToPlaces[this.state.searchName] === undefined) {
-            this.showModalWindow("Распределение мест", "Указанного участника не существует");
-            return;
         }
         return true;
     }
@@ -368,7 +355,6 @@ class Places extends React.Component {
     handleFillNameEntered = (name) => {
         this.setState(state => ({
             nameInputModal: null,
-            prevFillValue: state.fillValue,
             fillValue: name
         }), () => this.fillEmpty());
     }
@@ -376,9 +362,7 @@ class Places extends React.Component {
     fillEmpty = () => {
         this.setState(state => ({
             sectors: state.sectors.map(sector => sector.map(row => row.map(name => {
-                if (name === undefined || name === this.state.prevFillValue)
-                    return this.state.fillValue;
-                else return name;
+                return name ? name : state.fillValue;
             })))
         }));
     }
@@ -407,14 +391,6 @@ class Places extends React.Component {
 
     addPerson = () => {
         this.setState(state => ({
-            mapNamesToPlaces: {
-                [state.name]: {
-                    "sector": state.sector - 1,
-                    "row": state.row - 1,
-                    "place": state.place - 1
-                },
-                ...state.mapNamesToPlaces
-            },
             sectors: state.sectors.map((sector, index) => {
                 if (index == state.sector - 1)
                     return sector.map((row, index) => {
@@ -428,21 +404,11 @@ class Places extends React.Component {
                     })
                 else return sector;
             })
-        }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+        }), () => console.log(this.state.sectors));
     }
 
     replacePerson = () => {
         this.setState(state => ({
-            mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
-                .reduce((result, name) => {
-                    if (state.mapNamesToPlaces[name].sector == state.sector - 1 &&
-                        state.mapNamesToPlaces[name].row == state.row - 1 &&
-                        state.mapNamesToPlaces[name].place == state.place - 1)
-                        result[state.name] = state.mapNamesToPlaces[name];
-                    else
-                        result[name] = state.mapNamesToPlaces[name];
-                    return result;
-                }, {}),
             sectors: state.sectors.map((sector, index) => {
                 if (index == state.sector - 1)
                     return sector.map((row, index) => {
@@ -456,17 +422,11 @@ class Places extends React.Component {
                     })
                 else return sector;
             })
-        }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+        }), () => console.log(this.state.sectors));
     }
 
     removePerson = () => {
         this.setState(state => ({
-            mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
-                .reduce((result, key) => {
-                    if (key !== state.name)
-                        result[key] = state.mapNamesToPlaces[key];
-                    return result;
-                }, {}),
             sectors: state.sectors.map(sector => {
                 return sector.map(row => {
                     return row.map(name => {
@@ -476,19 +436,11 @@ class Places extends React.Component {
                     })
                 })
             })
-        }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+        }), () => console.log(this.state.sectors));
     }
 
     clearPlace = () => {
         this.setState(state => ({
-            mapNamesToPlaces: Object.keys(state.mapNamesToPlaces)
-                .reduce((result, name) => {
-                    if (state.mapNamesToPlaces[name].sector != state.sector - 1 ||
-                        state.mapNamesToPlaces[name].row != state.row - 1 ||
-                        state.mapNamesToPlaces[name].place != state.place - 1)
-                        result[name] = state.mapNamesToPlaces[name];
-                    return result;
-                }, {}),
             sectors: state.sectors.map((sector, index) => {
                 if (index == state.sector - 1)
                     return sector.map((row, index) => {
@@ -502,7 +454,7 @@ class Places extends React.Component {
                     })
                 else return sector;
             })
-        }), () => console.log(this.state.mapNamesToPlaces, this.state.sectors));
+        }), () => console.log(this.state.sectors));
     }
 }
 
