@@ -11,12 +11,13 @@ const PlacesForm = ({
     handleReplaceButtonClicked,
     handleResetButtonClicked,
     handleSaveButtonClicked,
-    handleLoadButtonClicked
+    handleLoadButtonClicked,
+    handleFillButtonClicked
 }) => (
         <form>
             <h4 className="text-center">Распределение мест</h4>
             <div className="form-row mt-2">
-                <div className="col">
+                <div className="col-6">
                     <div className="form-group">
                         <label>Участник:</label>
                         <input
@@ -25,6 +26,18 @@ const PlacesForm = ({
                             value={name}
                             onChange={handleNameChange} />
                     </div>
+                </div>
+                <div className="col-2">
+                    <div className="form-group">
+                        <label>Сектор:</label>
+                        <input
+                            className="form-control"
+                            type="text"
+                            value={sector}
+                            onChange={handleSectorChange} />
+                    </div>
+                </div>
+                <div className="col-2">
                     <div className="form-group">
                         <label>Ряд:</label>
                         <input
@@ -34,15 +47,7 @@ const PlacesForm = ({
                             onChange={handleRowChange} />
                     </div>
                 </div>
-                <div className="col">
-                    <div className="form-group">
-                        <label>Сектор:</label>
-                        <input
-                            className="form-control"
-                            type="text"
-                            value={sector}
-                            onChange={handleSectorChange} />
-                    </div>
+                <div className="col-2">
                     <div className="form-group">
                         <label>Место:</label>
                         <input
@@ -78,6 +83,12 @@ const PlacesForm = ({
                         type="button"
                         onClick={handleReplaceButtonClicked}>
                         Заменить
+                    </button>
+                    <button
+                        className="btn btn-primary btn-sm mr-2"
+                        type="reset"
+                        onClick={handleFillButtonClicked}>
+                        Заполнить пустые
                     </button>
                     <button
                         className="btn btn-primary btn-sm mr-2"

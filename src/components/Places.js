@@ -4,7 +4,11 @@ import SearchForm from "./SearchForm";
 import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
 import NameInputModal from "./NameInputModal";
-import Presidium from "./Presidium";
+
+/*
+Возможность задать размер шрифта
+
+*/
 
 class Places extends React.Component {
     constructor(props) {
@@ -16,20 +20,24 @@ class Places extends React.Component {
             { rows: 7, cols: 7 },
             { rows: 1, cols: 7 }];
 
+        this.emptyPlaces = {
+            mapNamesToPlaces: {},
+            sectors: this.sectorSizes.map(sectorSize => {
+                return this.createSector(sectorSize.rows, sectorSize.cols)
+            }),
+        }
+
         this.state = {
             name: "",
             sector: "",
             row: "",
             place: "",
             searchName: "",
+            prevFillValue: null,
+            fillValue: "Оператор НР",
             modalWindow: null,
             nameInputModal: null,
-            mapNamesToPlaces: {},
-            sectors: [
-                this.createSector(this.sectorSizes[0].rows, this.sectorSizes[0].cols),
-                this.createSector(this.sectorSizes[1].rows, this.sectorSizes[1].cols),
-                this.createSector(this.sectorSizes[2].rows, this.sectorSizes[2].cols),
-                this.createSector(this.sectorSizes[3].rows, this.sectorSizes[3].cols)],
+            ...this.emptyPlaces
         };
     }
 
@@ -66,16 +74,19 @@ class Places extends React.Component {
     }
 
     handleClearPlaceButtonClicked = () => {
-        if (this.checkSector() && this.checkRow() && this.checkPlace() && this.checkPlaceEmpty()) {
+        if (this.checkSector() && this.checkRow() && this.checkPlace()) {
             this.clearPlace();
         }
     }
 
     handleReplaceButtonClicked = () => {
         if (this.checkName() && this.checkSector() &&
-            this.checkRow() && this.checkPlace() &&
-            this.checkPlaceEmpty()) {
-            this.replacePerson();
+            this.checkRow() && this.checkPlace()) {
+            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === undefined ||
+                this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === this.state.fillValue)
+                this.addPerson();
+            else
+                this.replacePerson();
         }
     }
 
@@ -84,7 +95,8 @@ class Places extends React.Component {
             name: "",
             sector: "",
             row: "",
-            place: ""
+            place: "",
+            ...this.emptyPlaces
         });
     }
 
@@ -121,13 +133,21 @@ class Places extends React.Component {
         fileReader.readAsText(file, "UTF-8");
     }
 
+    handleFillButtonClicked = () => {
+        this.setState({
+            nameInputModal: <NameInputModal
+                handleNameEntered={this.handleFillNameEntered}
+                handleCloseClicked={this.handleNameInputModalClose} />
+        });
+    }
+
     render() {
         return (
             <React.Fragment>
                 {this.state.modalWindow}
                 {this.state.nameInputModal}
                 <div className="row justify-content-center">
-                    <div className="col-5 border rounded p-2 mt-2 mr-2">
+                    <div className="col-6 border rounded p-2 mt-2">
                         <PlacesForm
                             name={this.state.name} handleNameChange={this.handleNameChange}
                             row={this.state.row} handleRowChange={this.handleRowChange}
@@ -139,9 +159,10 @@ class Places extends React.Component {
                             handleReplaceButtonClicked={this.handleReplaceButtonClicked}
                             handleResetButtonClicked={this.handleResetButtonClicked}
                             handleSaveButtonClicked={this.handleSaveButtonClicked}
-                            handleLoadButtonClicked={this.handleLoadButtonClicked} />
+                            handleLoadButtonClicked={this.handleLoadButtonClicked}
+                            handleFillButtonClicked={this.handleFillButtonClicked} />
                     </div>
-                    <div className="col-3">
+                    <div className="col-3 ml-2">
                         <SearchForm searchName={this.state.searchName}
                             handleSearchNameChanged={this.handleSearchNameChanged}
                             handleSearchButtonClicked={this.handleSearchButtonClicked} />
@@ -161,6 +182,7 @@ class Places extends React.Component {
                     <div style={{ width: "25%", marginLeft: "1%", marginRight: "0.5%" }}>
                         <h4 className="lead text-center">Сектор 1</h4>
                         <Sector
+                            showHeaders
                             sector={this.state.sectors[0]}
                             sectorSize={this.sectorSizes[0]}
                             sectorNumber={1}
@@ -169,6 +191,7 @@ class Places extends React.Component {
                     <div style={{ width: "45%", marginLeft: "1%", marginRight: "1%" }}>
                         <h4 className="lead text-center">Сектор 2</h4>
                         <Sector
+                            showHeaders
                             sector={this.state.sectors[1]}
                             sectorSize={this.sectorSizes[1]}
                             sectorNumber={2}
@@ -177,6 +200,7 @@ class Places extends React.Component {
                     <div style={{ width: "25%", marginLeft: "0.5%", marginRight: "1%" }}>
                         <h4 className="lead text-center">Сектор 3</h4>
                         <Sector
+                            showHeaders
                             sector={this.state.sectors[2]}
                             sectorSize={this.sectorSizes[2]}
                             sectorNumber={3}
@@ -204,7 +228,7 @@ class Places extends React.Component {
         }
         if (sector > this.state.sectors.length) {
             this.showModalWindow("Распределение мест",
-                "Номер сектора должен быть в диапазоне от 1 до 3 включительно");
+                "Номер сектора должен быть в диапазоне от 1 до 4 включительно");
             return false;
         }
         return true;
@@ -246,7 +270,8 @@ class Places extends React.Component {
         const sector = this.state.sector;
         const row = this.state.row;
         const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1] !== undefined) {
+        if (this.state.sectors[sector - 1][row - 1][place - 1] !== undefined &&
+            this.state.sectors[sector - 1][row - 1][place - 1] !== this.state.fillValue) {
             this.showModalWindow("Распределение мест",
                 `Узазанное место занято: ${this.state.sectors[sector - 1][row - 1][place - 1]}`);
             return false;
@@ -258,7 +283,8 @@ class Places extends React.Component {
         const sector = this.state.sector;
         const row = this.state.row;
         const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1] === undefined) {
+        if (this.state.sectors[sector - 1][row - 1][place - 1] === undefined ||
+            this.state.sectors[sector - 1][row - 1][place - 1] === this.state.fillValue) {
             this.showModalWindow("Распределение мест", "Узазанное место свободно");
             return false;
         }
@@ -315,7 +341,6 @@ class Places extends React.Component {
             row: row + 1,
             place: place + 1
         }, () => this.showNameInputModal());
-
     }
 
     showNameInputModal = () => {
@@ -332,11 +357,30 @@ class Places extends React.Component {
             nameInputModal: null,
             name: name
         }, () => {
-            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === undefined)
+            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === undefined ||
+                this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === this.state.fillValue)
                 this.addPerson();
             else
                 this.replacePerson();
         });
+    }
+
+    handleFillNameEntered = (name) => {
+        this.setState(state => ({
+            nameInputModal: null,
+            prevFillValue: state.fillValue,
+            fillValue: name
+        }), () => this.fillEmpty());
+    }
+
+    fillEmpty = () => {
+        this.setState(state => ({
+            sectors: state.sectors.map(sector => sector.map(row => row.map(name => {
+                if (name === undefined || name === this.state.prevFillValue)
+                    return this.state.fillValue;
+                else return name;
+            })))
+        }));
     }
 
     handleNameInputModalClose = () => this.setState({ nameInputModal: null });

@@ -25,7 +25,8 @@
     background-color: #F6F895;
 }
 
-.table-places-cell {
+.table-places-cell  {
+    padding-top: 0.5em;
     display: block;
     height: 5.5em;
     word-wrap: break-word;
