@@ -13,7 +13,8 @@ const PlacesForm = ({
     handleResetButtonClicked,
     handleSaveButtonClicked,
     handleLoadButtonClicked,
-    handleFillButtonClicked
+    handleFillButtonClicked,
+    color, onColorChange,
 }) => (
         <form>
             <h4 className="text-center">Распределение мест</h4>
@@ -61,7 +62,9 @@ const PlacesForm = ({
                 <div className="col-2">
                     <div className="form-group">
                         <label>Цвет:</label>
-                        <ColorPicker />
+                        <ColorPicker
+                            color={color}
+                            onColorChange={onColorChange} />
                     </div>
                 </div>
             </div>

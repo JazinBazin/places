@@ -6,7 +6,6 @@ class ColorPicker extends React.Component {
         super(props);
         this.state = {
             displayColorPicker: false,
-            color: "#0693E3"
         }
     }
 
@@ -22,7 +21,7 @@ class ColorPicker extends React.Component {
     }
 
     handleChange = (color) => {
-        this.setState({ color: color.hex });
+        this.props.onColorChange(color.hex);
     }
 
     render() {
@@ -40,7 +39,7 @@ class ColorPicker extends React.Component {
                     }}>
                     <div className="col pr-0">
                         <TwitterPicker
-                            color={this.state.color}
+                            color={this.props.color}
                             triangle="top-left"
                             onChange={this.handleChange} />
                     </div>
@@ -64,7 +63,7 @@ class ColorPicker extends React.Component {
                     type="color"
                     className="form-control"
                     onClick={this.handleClick}
-                    value={this.state.color}
+                    value={this.props.color}
                     onChange={() => { }} />
                 {colorPicker}
             </React.Fragment>

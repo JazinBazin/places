@@ -29,6 +29,7 @@ class Places extends React.Component {
             sector: "",
             row: "",
             place: "",
+            color: "#ABB8C3",
             searchName: "",
             fillValue: "",
             fontSize: 1,
@@ -161,6 +162,12 @@ class Places extends React.Component {
         });
     }
 
+    handleColorChange = (color) => {
+        this.setState({
+            color: color
+        });
+    }
+
     render() {
         const fontSizeValue = `${this.state.fontSize}em`;
         return (
@@ -181,7 +188,8 @@ class Places extends React.Component {
                             handleResetButtonClicked={this.handleResetButtonClicked}
                             handleSaveButtonClicked={this.handleSaveButtonClicked}
                             handleLoadButtonClicked={this.handleLoadButtonClicked}
-                            handleFillButtonClicked={this.handleFillButtonClicked} />
+                            handleFillButtonClicked={this.handleFillButtonClicked}
+                            color={this.state.color} onColorChange={this.handleColorChange} />
                     </div>
                     <div className="col-3 ml-2">
                         <SearchForm
