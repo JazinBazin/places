@@ -38,6 +38,7 @@ class Places extends React.Component {
             fillName: "",
             fillColor: "#FFFFFF",
             fontSize: 1,
+            headline: "СХЕМА РАЗМЕЩЕНИЯ",
             modalWindow: null,
             placeInputModal: null,
             sectors: this.emptySectors,
@@ -206,6 +207,14 @@ class Places extends React.Component {
                             fontSize={this.state.fontSize}
                             onFontSizeChange={this.handleFontSizeChanged} />
                     </div>
+                </div>
+                <div className="row mt-4 justify-content-center">
+                    <h3 className="text-center">
+                        СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ<br />
+                            IV Военно-научной конференции<br />
+                            "Роботизация Вооруженных Сил Российской Федерации"<br />
+                            от Министерства обороны Российской Федерации<br />
+                    </h3>
                 </div>
                 <div className="row mt-4">
                     <div style={{ width: "24%", margin: "0 auto" }}>
@@ -385,11 +394,11 @@ class Places extends React.Component {
     }
 
     handleFillEmpty = (name, color) => {
-        this.setState(state => ({
+        this.setState({
             placeInputModal: null,
             fillName: name,
             fillColor: color
-        }), () => this.fillEmpty());
+        }, () => this.fillEmpty());
     }
 
     fillEmpty = () => {
