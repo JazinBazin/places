@@ -1,12 +1,14 @@
 import React from "react";
+import ColorPicker from "./ColorPicker"
 import "../styles/modal.css";
 
-class NameInputModal extends React.Component {
+class PlaceInputModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             name: props.name ? props.name : "",
-            errorMessage: ""
+            color: props.color ? props.color : "#ABB8C3",
+            nameErrorMessage: ""
         }
         this.inputNameField = React.createRef();
     }
@@ -17,15 +19,17 @@ class NameInputModal extends React.Component {
 
     handleNameChange = e => this.setState({ name: e.target.value });
 
+    handleColorChange = color => this.setState({ color: color });
+
     handleOkClicked = () => {
         if (!this.props.allowEmpty)
             if (!this.props.allowEmpty && this.state.name.length == 0) {
                 this.setState({
-                    errorMessage: 'Заполните поле "Участник"'
+                    nameErrorMessage: 'Заполните поле "Участник"'
                 })
                 return;
             }
-        this.props.handleNameEntered(this.state.name);
+        this.props.handleConfirmClicked(this.state.name, this.state.color);
     }
 
     handleKeyPressed = e => {
@@ -50,7 +54,13 @@ class NameInputModal extends React.Component {
                                     onChange={this.handleNameChange}
                                     onKeyPress={this.handleKeyPressed}
                                 />
-                                <span style={{ color: "red" }}>{this.state.errorMessage}</span>
+                                <span style={{ color: "red" }}>{this.state.nameErrorMessage}</span>
+                                <div className="mt-3">
+                                    <label>Цвет:</label>
+                                    <ColorPicker
+                                        color={this.state.color}
+                                        onColorChange={this.handleColorChange} />
+                                </div>
                             </div>
                             <div className="card-footer">
                                 <div className="row justify-content-end">
@@ -71,9 +81,9 @@ class NameInputModal extends React.Component {
                         </div>
                     </div>
                 </div >
-            </div>
+            </div >
         );
     }
 }
 
-export default NameInputModal;
+export default PlaceInputModal;

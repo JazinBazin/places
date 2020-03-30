@@ -3,11 +3,14 @@ import PlacesForm from "./PlacesForm";
 import SearchForm from "./SearchForm";
 import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
-import NameInputModal from "./NameInputModal";
+import PlaceInputModal from "./PlaceInputModal";
 import FontSizeForm from "./FontSizeForm";
 
 /*
-    1. Выбор цвета
+    1. Заголовок конференции
+    2. Расположение экранов
+    3. Скрытие формы для редактирования
+    4. Поменять (добавить) цвета
 */
 
 class Places extends React.Component {
@@ -20,9 +23,10 @@ class Places extends React.Component {
             { rows: 7, cols: 7 },
             { rows: 1, cols: 7 }];
 
+        this.emptyPlace = { name: "", color: "#FFFFFF" };
         this.emptySectors = this.sectorSizes.map(sectorSize => {
-            return this.createSector(sectorSize.rows, sectorSize.cols)
-        })
+            return this.createSector(sectorSize.rows, sectorSize.cols, this.emptyPlace);
+        });
 
         this.state = {
             name: "",
@@ -31,10 +35,11 @@ class Places extends React.Component {
             place: "",
             color: "#ABB8C3",
             searchName: "",
-            fillValue: "",
+            fillName: "",
+            fillColor: "#FFFFFF",
             fontSize: 1,
             modalWindow: null,
-            nameInputModal: null,
+            placeInputModal: null,
             sectors: this.emptySectors,
         };
     }
@@ -80,7 +85,7 @@ class Places extends React.Component {
     handleReplaceButtonClicked = () => {
         if (this.checkName() && this.checkSector() &&
             this.checkRow() && this.checkPlace() && this.checkPlaceEmpty()) {
-            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1] === "")
+            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1].name === "")
                 this.addPerson();
             else
                 this.replacePerson();
@@ -104,8 +109,8 @@ class Places extends React.Component {
             const found = this.state.sectors.some(
                 (sector, sectorNumber) =>
                     sector.some((row, rowNumber) =>
-                        row.some((name, placeNumber) => {
-                            if (name == this.state.searchName) {
+                        row.some((place, placeNumber) => {
+                            if (place.name == this.state.searchName) {
                                 const message = sectorNumber == 3
                                     ? `Президиум, место ${placeNumber + 1}`
                                     : `Сектор ${sectorNumber + 1}, ряд ${rowNumber + 1}, место ${placeNumber + 1}`
@@ -141,19 +146,20 @@ class Places extends React.Component {
 
     handleFillButtonClicked = () => {
         this.setState({
-            nameInputModal: <NameInputModal
-                handleNameEntered={this.handleFillNameEntered}
-                handleCloseClicked={this.handleNameInputModalClose} />
+            placeInputModal: <PlaceInputModal
+                handleConfirmClicked={this.handleFillEmpty}
+                handleCloseClicked={this.handlePlaceInputModalClose} />
         });
     }
 
-    handlePlaceClicked = (name, sector, row, place) => {
+    handlePlaceClicked = (name, color, sector, row, place) => {
         this.setState({
             name,
+            color,
             sector: sector + 1,
             row: row + 1,
             place: place + 1
-        }, () => this.showNameInputModal());
+        }, () => this.showPlaceInputModal());
     }
 
     handleFontSizeChanged = (e) => {
@@ -173,7 +179,7 @@ class Places extends React.Component {
         return (
             <React.Fragment>
                 {this.state.modalWindow}
-                {this.state.nameInputModal}
+                {this.state.placeInputModal}
                 <div className="row justify-content-center">
                     <div className="col-6 border rounded p-2 mt-2">
                         <PlacesForm
@@ -307,9 +313,9 @@ class Places extends React.Component {
         const sector = this.state.sector;
         const row = this.state.row;
         const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1].length != 0) {
+        if (this.state.sectors[sector - 1][row - 1][place - 1].name.length != 0) {
             this.showModalWindow("Распределение мест",
-                `Узазанное место занято: ${this.state.sectors[sector - 1][row - 1][place - 1]}`);
+                `Узазанное место занято: ${this.state.sectors[sector - 1][row - 1][place - 1].name}`);
             return false;
         }
         return true;
@@ -319,7 +325,7 @@ class Places extends React.Component {
         const sector = this.state.sector;
         const row = this.state.row;
         const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1].length == 0) {
+        if (this.state.sectors[sector - 1][row - 1][place - 1].name.length == 0) {
             this.showModalWindow("Распределение мест",
                 "Узазанное место свободно");
             return false;
@@ -354,47 +360,50 @@ class Places extends React.Component {
 
     handleModalWindowClose = () => this.setState({ modalWindow: null });
 
-    showNameInputModal = () => {
+    showPlaceInputModal = () => {
         this.setState({
-            nameInputModal: <NameInputModal
+            placeInputModal: <PlaceInputModal
                 allowEmpty
                 name={this.state.name}
-                handleNameEntered={this.handleNameInputReturnData}
-                handleCloseClicked={this.handleNameInputModalClose} />
+                color={this.state.color}
+                handleConfirmClicked={this.handlePlaceDataConfirmed}
+                handleCloseClicked={this.handlePlaceInputModalClose} />
         });
     }
 
-    handleNameInputReturnData = (name) => {
+    handlePlaceDataConfirmed = (name, color) => {
         this.setState({
-            nameInputModal: null,
-            name: name
+            placeInputModal: null,
+            name: name,
+            color: color
         }, () => {
-            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1].length == 0)
+            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1].name.length == 0)
                 this.addPerson();
             else
                 this.replacePerson();
         });
     }
 
-    handleFillNameEntered = (name) => {
+    handleFillEmpty = (name, color) => {
         this.setState(state => ({
-            nameInputModal: null,
-            fillValue: name
+            placeInputModal: null,
+            fillName: name,
+            fillColor: color
         }), () => this.fillEmpty());
     }
 
     fillEmpty = () => {
         this.setState(state => ({
-            sectors: state.sectors.map(sector => sector.map(row => row.map(name => {
-                return name ? name : state.fillValue;
+            sectors: state.sectors.map(sector => sector.map(row => row.map(place => {
+                return place.name ? place : { name: state.fillName, color: state.fillColor };
             })))
         }));
     }
 
-    handleNameInputModalClose = () => this.setState({ nameInputModal: null });
+    handlePlaceInputModalClose = () => this.setState({ placeInputModal: null });
 
-    createSector = (rows, cols) => {
-        return Array(rows).fill().map(() => Array(cols).fill(""));
+    createSector = (rows, cols, value) => {
+        return Array(rows).fill().map(() => Array(cols).fill(value));
     }
 
     saveTextAsFile(blob, fileName) {
@@ -419,10 +428,10 @@ class Places extends React.Component {
                 if (index == state.sector - 1)
                     return sector.map((row, index) => {
                         if (index == state.row - 1)
-                            return row.map((name, index) => {
+                            return row.map((place, index) => {
                                 if (index == state.place - 1)
-                                    return state.name;
-                                else return name;
+                                    return { name: state.name, color: state.color };
+                                else return place;
                             });
                         else return row;
                     })
@@ -437,10 +446,10 @@ class Places extends React.Component {
                 if (index == state.sector - 1)
                     return sector.map((row, index) => {
                         if (index == state.row - 1)
-                            return row.map((name, index) => {
+                            return row.map((place, index) => {
                                 if (index == state.place - 1)
-                                    return state.name;
-                                else return name;
+                                    return { name: state.name, color: state.color };
+                                else return place;
                             });
                         else return row;
                     })
@@ -453,10 +462,10 @@ class Places extends React.Component {
         this.setState(state => ({
             sectors: state.sectors.map(sector => {
                 return sector.map(row => {
-                    return row.map(name => {
-                        if (name == state.name)
-                            return "";
-                        else return name;
+                    return row.map(place => {
+                        if (place.name == state.name)
+                            return { ...this.emptyPlace };
+                        else return place;
                     })
                 })
             })
@@ -469,10 +478,10 @@ class Places extends React.Component {
                 if (index == state.sector - 1)
                     return sector.map((row, index) => {
                         if (index == state.row - 1)
-                            return row.map((name, index) => {
+                            return row.map((place, index) => {
                                 if (index == state.place - 1)
-                                    return "";
-                                else return name;
+                                    return { ...this.emptyPlace };
+                                else return place;
                             });
                         else return row;
                     })

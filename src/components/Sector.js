@@ -26,12 +26,12 @@ const Sector = ({ fontSize, sector, sectorSize, sectorNumber, onPlaceClick, show
             ? [<th key={0}>Ряд {i + 1}</th>]
             : [];
         for (let j = 0; j < sectorSize.cols; ++j) {
-            const person = sector[i][j] ? sector[i][j] : "";
+            const place = sector[i][j];
             row.push(
                 <SectorCell
                     fontSize={fontSize}
                     key={j + 1}
-                    name={person}
+                    place={place}
                     sector={sectorNumber - 1}
                     row={i}
                     column={j}

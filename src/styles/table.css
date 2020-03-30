@@ -4,7 +4,6 @@
     font-size: 0.65em;
     width: 100%;
     text-align: center;
-    /* border: 1px solid #C0C0C0; */
     border-collapse: collapse;
     border-radius: 1.2em;
     border-style: hidden;
@@ -22,11 +21,12 @@
 }
 
 .table-places td:hover {
-    background-color: #F6F895;
+    background-color: #F6F895 !important;
 }
 
 .table-places-cell  {
     padding-top: 0.5em;
+    padding-bottom: 0.5em;
     display: block;
     height: 5.5em;
     width: 100%;
