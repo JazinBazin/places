@@ -5,8 +5,9 @@ import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
 import PlaceInputModal from "./PlaceInputModal";
 import FontSizeForm from "./FontSizeForm";
+import ConferenceName from "./ConferenceName";
 
-/*
+/*;
     1. Заголовок конференции
     2. Расположение экранов
     3. Скрытие формы для редактирования
@@ -38,7 +39,7 @@ class Places extends React.Component {
             fillName: "",
             fillColor: "#FFFFFF",
             fontSize: 1,
-            headline: "СХЕМА РАЗМЕЩЕНИЯ",
+            conferenceName: "СХЕМА РАЗМЕЩЕНИЯ",
             modalWindow: null,
             placeInputModal: null,
             sectors: this.emptySectors,
@@ -209,12 +210,12 @@ class Places extends React.Component {
                     </div>
                 </div>
                 <div className="row mt-4 justify-content-center">
-                    <h3 className="text-center">
+                    <ConferenceName onCLick={this.handleConferenceNameClick}>
                         СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ<br />
-                            IV Военно-научной конференции<br />
-                            "Роботизация Вооруженных Сил Российской Федерации"<br />
-                            от Министерства обороны Российской Федерации<br />
-                    </h3>
+                        IV Военно-научной конференции<br />
+                        "Роботизация Вооруженных Сил Российской Федерации"<br />
+                        от Министерства обороны Российской Федерации<br />
+                    </ConferenceName>
                 </div>
                 <div className="row mt-4">
                     <div style={{ width: "24%", margin: "0 auto" }}>
