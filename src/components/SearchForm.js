@@ -4,7 +4,6 @@ const SearchForm = ({
     searchName, handleSearchNameChanged,
     handleSearchButtonClicked
 }) => (
-        <React.Fragment>
         <form className="border rounded p-2 mt-2">
             <h4 className="text-center">Поиск по участнику</h4>
             <div className="form-row mt-2">
@@ -25,12 +24,7 @@ const SearchForm = ({
                 </button>
                 </div>
             </div>
-            {/* <div className="form-row mt-2">
-                <p></p>
-            </div> */}
         </form>
-        </React.Fragment>
-
     );
 
 export default SearchForm;

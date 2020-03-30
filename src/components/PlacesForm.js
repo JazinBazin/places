@@ -1,4 +1,5 @@
 import React from "react";
+import ColorPicker from "./ColorPicker";
 
 const PlacesForm = ({
     name, handleNameChange,
@@ -17,7 +18,7 @@ const PlacesForm = ({
         <form>
             <h4 className="text-center">Распределение мест</h4>
             <div className="form-row mt-2">
-                <div className="col-6">
+                <div className="col-4">
                     <div className="form-group">
                         <label>Участник:</label>
                         <input
@@ -55,6 +56,12 @@ const PlacesForm = ({
                             type="text"
                             value={place}
                             onChange={handlePlaceChange} />
+                    </div>
+                </div>
+                <div className="col-2">
+                    <div className="form-group">
+                        <label>Цвет:</label>
+                        <ColorPicker />
                     </div>
                 </div>
             </div>

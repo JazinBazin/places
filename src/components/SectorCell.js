@@ -1,9 +1,9 @@
 import React from "react";
 
-const SectorCell = ({ sector, row, column, onPlaceClick, name }) => (
+const SectorCell = ({ fontSize, sector, row, column, onPlaceClick, name }) => (
     <td onClick={() => onPlaceClick(name, sector, row, column)}>
         <span className="table-places-cell">
-            {name}
+            <span style={{ fontSize: fontSize }}>{name}</span>
         </span>
     </td>
 );

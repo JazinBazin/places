@@ -4,10 +4,10 @@ import SearchForm from "./SearchForm";
 import Sector from "./Sector";
 import ModalWindow from "./ModalWindow";
 import NameInputModal from "./NameInputModal";
+import FontSizeForm from "./FontSizeForm";
 
 /*
-    1. Возможность задать размер шрифта
-    
+    1. Выбор цвета
 */
 
 class Places extends React.Component {
@@ -30,7 +30,8 @@ class Places extends React.Component {
             row: "",
             place: "",
             searchName: "",
-            fillValue: "Оператор НР",
+            fillValue: "",
+            fontSize: 1,
             modalWindow: null,
             nameInputModal: null,
             sectors: this.emptySectors,
@@ -154,7 +155,14 @@ class Places extends React.Component {
         }, () => this.showNameInputModal());
     }
 
+    handleFontSizeChanged = (e) => {
+        this.setState({
+            fontSize: e.target.value,
+        });
+    }
+
     render() {
+        const fontSizeValue = `${this.state.fontSize}em`;
         return (
             <React.Fragment>
                 {this.state.modalWindow}
@@ -176,15 +184,20 @@ class Places extends React.Component {
                             handleFillButtonClicked={this.handleFillButtonClicked} />
                     </div>
                     <div className="col-3 ml-2">
-                        <SearchForm searchName={this.state.searchName}
+                        <SearchForm
+                            searchName={this.state.searchName}
                             handleSearchNameChanged={this.handleSearchNameChanged}
                             handleSearchButtonClicked={this.handleSearchButtonClicked} />
+                        <FontSizeForm
+                            fontSize={this.state.fontSize}
+                            onFontSizeChange={this.handleFontSizeChanged} />
                     </div>
                 </div>
                 <div className="row mt-4">
                     <div style={{ width: "24%", margin: "0 auto" }}>
                         <h3 className="text-center">Президиум</h3>
                         <Sector
+                            fontSize={fontSizeValue}
                             sector={this.state.sectors[3]}
                             sectorSize={this.sectorSizes[3]}
                             sectorNumber={4}
@@ -196,6 +209,7 @@ class Places extends React.Component {
                         <h4 className="lead text-center">Сектор 1</h4>
                         <Sector
                             showHeaders
+                            fontSize={fontSizeValue}
                             sector={this.state.sectors[0]}
                             sectorSize={this.sectorSizes[0]}
                             sectorNumber={1}
@@ -205,6 +219,7 @@ class Places extends React.Component {
                         <h4 className="lead text-center">Сектор 2</h4>
                         <Sector
                             showHeaders
+                            fontSize={fontSizeValue}
                             sector={this.state.sectors[1]}
                             sectorSize={this.sectorSizes[1]}
                             sectorNumber={2}
@@ -213,6 +228,7 @@ class Places extends React.Component {
                     <div style={{ width: "25%", marginLeft: "0.5%", marginRight: "1%" }}>
                         <h4 className="lead text-center">Сектор 3</h4>
                         <Sector
+                            fontSize={fontSizeValue}
                             showHeaders
                             sector={this.state.sectors[2]}
                             sectorSize={this.sectorSizes[2]}
@@ -295,7 +311,7 @@ class Places extends React.Component {
         const sector = this.state.sector;
         const row = this.state.row;
         const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1] .length == 0) {
+        if (this.state.sectors[sector - 1][row - 1][place - 1].length == 0) {
             this.showModalWindow("Распределение мест",
                 "Узазанное место свободно");
             return false;

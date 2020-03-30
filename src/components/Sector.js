@@ -3,7 +3,7 @@ import SectorCell from "./SectorCell";
 import "../styles/table.css";
 
 
-const Sector = ({ sector, sectorSize, sectorNumber, onPlaceClick, showHeaders }) => {
+const Sector = ({ fontSize, sector, sectorSize, sectorNumber, onPlaceClick, showHeaders }) => {
     let headers = null
 
     if (showHeaders) {
@@ -29,6 +29,7 @@ const Sector = ({ sector, sectorSize, sectorNumber, onPlaceClick, showHeaders })
             const person = sector[i][j] ? sector[i][j] : "";
             row.push(
                 <SectorCell
+                    fontSize={fontSize}
                     key={j + 1}
                     name={person}
                     sector={sectorNumber - 1}
