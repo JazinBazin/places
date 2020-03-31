@@ -20,7 +20,7 @@ import Screen from "./Screen";
     6. Крайние сектора по диагонали
     7. Выделение места при поиске +++
     8. Подобрать фон ---
-    9. Записывать название конференции
+    9. Записывать название конференции +++
     10. Заполнить места
 */
 
@@ -145,6 +145,7 @@ class Places extends React.Component {
 
     handleSaveButtonClicked = () => {
         const data = {
+            "conferenceName": this.state.conferenceName,
             "sectors": this.state.sectors
         };
 
@@ -158,6 +159,7 @@ class Places extends React.Component {
         fileReader.onload = () => {
             const data = JSON.parse(fileReader.result);
             this.setState({
+                conferenceName: data.conferenceName,
                 sectors: data.sectors
             });
         }
