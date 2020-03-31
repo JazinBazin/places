@@ -12,8 +12,8 @@ const SearchForm = ({
         <form
             className="border rounded p-2 mt-2"
             style={{ position: "relative" }}>
-            <h4 className="text-center">Поиск по участнику</h4>
-            <HideButton handleClick={setHidden} />
+            <h4 className="text-center mb-0">Поиск по участнику</h4>
+            <HideButton handleClick={setHidden} position="absolute" />
             <div style={{ display: display }} >
                 <div className="form-row mt-2">
                     <div className="col">

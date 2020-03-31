@@ -7,15 +7,18 @@ import PlaceInputModal from "./PlaceInputModal";
 import FontSizeForm from "./FontSizeForm";
 import ConferenceName from "./ConferenceName";
 import ConferenceNameInputModal from "./ConferenceNameInputModal";
+import HideButton from "./HideButton";
+import Screen from "./Screen";
 
 /*;
     1. Заголовок конференции +++
-    2. Расположение экранов
+    2. Расположение экранов +++
     3. Скрытие формы для редактирования +++
-    4. Поменять (добавить) цвета
+    4. Поменять (добавить) цвета +++
     5. Отобразить входы и выходы
     6. Крайние сектора по диагонали
     7. Выделение места при поиске
+    8. Подобрать фон
 */
 
 class Places extends React.Component {
@@ -44,6 +47,7 @@ class Places extends React.Component {
             fillName: "",
             fillColor: "#FFFFFF",
             fontSize: 1,
+            formsHidden: true,
             conferenceName: 'СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ\n' +
                 'IV Военно-научной конференции\n' +
                 '"Роботизация Вооруженных Сил Российской Федерации"\n' +
@@ -205,87 +209,112 @@ class Places extends React.Component {
         this.setState({ conferenceNameInputModal: null });
     }
 
+    handleHideButtonClicked = (hidden) => {
+        this.setState({ formsHidden: hidden });
+    }
+
     render() {
         const fontSizeValue = `${this.state.fontSize}em`;
+        const display = this.state.formsHidden ? "none" : "flex";
+
         return (
             <React.Fragment>
                 {this.state.modalWindow}
                 {this.state.placeInputModal}
                 {this.state.conferenceNameInputModal}
-                <div className="row justify-content-center align-items-start">
-                    <div className="col-6">
-                        <PlacesForm
-                            name={this.state.name} handleNameChange={this.handleNameChange}
-                            row={this.state.row} handleRowChange={this.handleRowChange}
-                            sector={this.state.sector} handleSectorChange={this.handleSectorChange}
-                            place={this.state.place} handlePlaceChange={this.handlePlaceChange}
-                            handleAddButtonClicked={this.handleAddButtonClicked}
-                            handleRemovePersonButtonClicked={this.handleRemovePersonButtonClicked}
-                            handleClearPlaceButtonClicked={this.handleClearPlaceButtonClicked}
-                            handleReplaceButtonClicked={this.handleReplaceButtonClicked}
-                            handleResetButtonClicked={this.handleResetButtonClicked}
-                            handleSaveButtonClicked={this.handleSaveButtonClicked}
-                            handleLoadButtonClicked={this.handleLoadButtonClicked}
-                            handleFillButtonClicked={this.handleFillButtonClicked}
-                            color={this.state.color} onColorChange={this.handleColorChange} />
+                <div style={{ position: "relative" }}>
+                    <HideButton handleClick={this.handleHideButtonClicked} position="fixed" hidden={this.state.formsHidden} />
+                    <div style={{ display: display }} className="row justify-content-center align-items-start">
+                        <div className="col-6">
+                            <PlacesForm
+                                name={this.state.name} handleNameChange={this.handleNameChange}
+                                row={this.state.row} handleRowChange={this.handleRowChange}
+                                sector={this.state.sector} handleSectorChange={this.handleSectorChange}
+                                place={this.state.place} handlePlaceChange={this.handlePlaceChange}
+                                handleAddButtonClicked={this.handleAddButtonClicked}
+                                handleRemovePersonButtonClicked={this.handleRemovePersonButtonClicked}
+                                handleClearPlaceButtonClicked={this.handleClearPlaceButtonClicked}
+                                handleReplaceButtonClicked={this.handleReplaceButtonClicked}
+                                handleResetButtonClicked={this.handleResetButtonClicked}
+                                handleSaveButtonClicked={this.handleSaveButtonClicked}
+                                handleLoadButtonClicked={this.handleLoadButtonClicked}
+                                handleFillButtonClicked={this.handleFillButtonClicked}
+                                color={this.state.color} onColorChange={this.handleColorChange} />
+                        </div>
+                        <div className="col-3 ml-2">
+                            <FontSizeForm
+                                fontSize={this.state.fontSize}
+                                onFontSizeChange={this.handleFontSizeChanged} />
+                            <SearchForm
+                                searchName={this.state.searchName}
+                                handleSearchNameChanged={this.handleSearchNameChanged}
+                                handleSearchButtonClicked={this.handleSearchButtonClicked} />
+                        </div>
                     </div>
-                    <div className="col-3 ml-2">
-                        <FontSizeForm
-                            fontSize={this.state.fontSize}
-                            onFontSizeChange={this.handleFontSizeChanged} />
-                        <SearchForm
-                            searchName={this.state.searchName}
-                            handleSearchNameChanged={this.handleSearchNameChanged}
-                            handleSearchButtonClicked={this.handleSearchButtonClicked} />
+                    <div className="row mt-4 justify-content-center">
+                        <ConferenceName
+                            onCLick={this.handleConferenceNameClick}>
+                            {this.state.conferenceName}
+                        </ConferenceName>
                     </div>
-                </div>
-                <div className="row mt-4 justify-content-center">
-                    <ConferenceName
-                        onCLick={this.handleConferenceNameClick}>
-                        {this.state.conferenceName}
-                    </ConferenceName>
-                </div>
-                <div className="row mt-4">
-                    <div style={{ width: "24%", margin: "0 auto" }}>
-                        <h3 className="text-center">Президиум</h3>
-                        <Sector
-                            fontSize={fontSizeValue}
-                            sector={this.state.sectors[3]}
-                            sectorSize={this.sectorSizes[3]}
-                            sectorNumber={4}
-                            onPlaceClick={this.handlePlaceClicked} />
+                    <div className="row mt-4 justify-content-between">
+                        <div className="col-auto">
+                            <Screen />
+                        </div>
+                        <div className="col-auto">
+                            <Screen />
+                        </div>
+                        <div className="col-auto">
+                            <Screen />
+                        </div>
                     </div>
-                </div>
-                <div className="row mt-4 mb-3">
-                    <div style={{ width: "25%", marginLeft: "1%", marginRight: "0.5%" }}>
-                        <h4 className="lead text-center">Сектор 1</h4>
-                        <Sector
-                            showHeaders
-                            fontSize={fontSizeValue}
-                            sector={this.state.sectors[0]}
-                            sectorSize={this.sectorSizes[0]}
-                            sectorNumber={1}
-                            onPlaceClick={this.handlePlaceClicked} />
+                    <div className="row mt-4">
+                        <div style={{ width: "24%", margin: "0 auto" }}>
+                            <h3 className="text-center">Президиум</h3>
+                            <Sector
+                                fontSize={fontSizeValue}
+                                sector={this.state.sectors[3]}
+                                sectorSize={this.sectorSizes[3]}
+                                sectorNumber={4}
+                                onPlaceClick={this.handlePlaceClicked} />
+                        </div>
                     </div>
-                    <div style={{ width: "45%", marginLeft: "1%", marginRight: "1%" }}>
-                        <h4 className="lead text-center">Сектор 2</h4>
-                        <Sector
-                            showHeaders
-                            fontSize={fontSizeValue}
-                            sector={this.state.sectors[1]}
-                            sectorSize={this.sectorSizes[1]}
-                            sectorNumber={2}
-                            onPlaceClick={this.handlePlaceClicked} />
+                    <div className="row mt-4 mb-3">
+                        <div style={{ width: "25%", marginLeft: "1%", marginRight: "0.5%" }}>
+                            <h4 className="lead text-center">Сектор 1</h4>
+                            <Sector
+                                showHeaders
+                                fontSize={fontSizeValue}
+                                sector={this.state.sectors[0]}
+                                sectorSize={this.sectorSizes[0]}
+                                sectorNumber={1}
+                                onPlaceClick={this.handlePlaceClicked} />
+                        </div>
+                        <div style={{ width: "45%", marginLeft: "1%", marginRight: "1%" }}>
+                            <h4 className="lead text-center">Сектор 2</h4>
+                            <Sector
+                                showHeaders
+                                fontSize={fontSizeValue}
+                                sector={this.state.sectors[1]}
+                                sectorSize={this.sectorSizes[1]}
+                                sectorNumber={2}
+                                onPlaceClick={this.handlePlaceClicked} />
+                        </div>
+                        <div style={{ width: "25%", marginLeft: "0.5%", marginRight: "1%" }}>
+                            <h4 className="lead text-center">Сектор 3</h4>
+                            <Sector
+                                fontSize={fontSizeValue}
+                                showHeaders
+                                sector={this.state.sectors[2]}
+                                sectorSize={this.sectorSizes[2]}
+                                sectorNumber={3}
+                                onPlaceClick={this.handlePlaceClicked} />
+                        </div>
                     </div>
-                    <div style={{ width: "25%", marginLeft: "0.5%", marginRight: "1%" }}>
-                        <h4 className="lead text-center">Сектор 3</h4>
-                        <Sector
-                            fontSize={fontSizeValue}
-                            showHeaders
-                            sector={this.state.sectors[2]}
-                            sectorSize={this.sectorSizes[2]}
-                            sectorNumber={3}
-                            onPlaceClick={this.handlePlaceClicked} />
+                    <div className="row mt-4 justify-content-center">
+                        <div className="col-auto">
+                            <Screen />
+                        </div>
                     </div>
                 </div>
             </React.Fragment >

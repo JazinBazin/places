@@ -25,7 +25,7 @@ const PlacesForm = ({
             className="border rounded p-2 mt-2"
             style={{ position: "relative" }}>
             <h4 className="text-center mb-0">Распределение мест</h4>
-            <HideButton handleClick={setHidden} />
+            <HideButton handleClick={setHidden} position="absolute"/>
             <div style={{ display: display }}>
                 <div className="form-row mt-2">
                     <div className="col-4">

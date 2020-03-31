@@ -9,8 +9,8 @@ const FontSizeForm = ({ fontSize, onFontSizeChange }) => {
         <form
             className="border rounded p-2 mt-2"
             style={{ position: "relative" }}>
-            <h4 className="text-center">Размер шрифта</h4>
-            <HideButton handleClick={setHidden} />
+            <h4 className="text-center mb-0">Размер шрифта</h4>
+            <HideButton handleClick={setHidden} position="absolute"/>
             <div style={{ display: display }} >
                 <div className="form-row mt-2">
                     <input

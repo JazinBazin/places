@@ -39,6 +39,7 @@ class ColorPicker extends React.Component {
                     }}>
                     <div className="col pr-0">
                         <TwitterPicker
+                            colors={['#FF9F97', '#FCF4EC', '#FAEAA1', '#FCB900', '#7BDCB5', '#00D084', '#8ED1FC', "#C9D4C5", '#ABB8C3', '#F78DA7' ]}
                             color={this.props.color}
                             triangle="top-left"
                             onChange={this.handleChange} />

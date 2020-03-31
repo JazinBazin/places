@@ -6,7 +6,7 @@ class HideButton extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            hidden: false,
+            hidden: this.props.hidden,
         }
     }
 
@@ -20,7 +20,7 @@ class HideButton extends React.Component {
         return (
             <span style={{
                 display: "block",
-                position: "absolute",
+                position: this.props.position,
                 top: top,
                 right: "0.3em",
                 cursor: "pointer",
