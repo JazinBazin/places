@@ -17,8 +17,8 @@ import Screen from "./Screen";
     4. Поменять (добавить) цвета +++
     5. Отобразить входы и выходы
     6. Крайние сектора по диагонали
-    7. Выделение места при поиске
-    8. Подобрать фон
+    7. Выделение места при поиске +++
+    8. Подобрать фон ---
 */
 
 class Places extends React.Component {
@@ -31,10 +31,12 @@ class Places extends React.Component {
             { rows: 7, cols: 7 },
             { rows: 1, cols: 7 }];
 
-        this.emptyPlace = { name: "", color: "#FFFFFF" };
+        this.emptyPlace = { name: "", color: "#FFFFFF", fontColor: "#000000" };
         this.emptySectors = this.sectorSizes.map(sectorSize => {
             return this.createSector(sectorSize.rows, sectorSize.cols, this.emptyPlace);
         });
+
+        this.highlightColor = "#FF0000";
 
         this.state = {
             name: "",
@@ -124,7 +126,8 @@ class Places extends React.Component {
                 (sector, sectorNumber) =>
                     sector.some((row, rowNumber) =>
                         row.some((place, placeNumber) => {
-                            if (place.name == this.state.searchName) {
+                            if (place.name.toLowerCase().includes(this.state.searchName.toLowerCase())) {
+                                this.highlightPlace(sectorNumber, rowNumber, placeNumber);
                                 const message = sectorNumber == 3
                                     ? `Президиум, место ${placeNumber + 1}`
                                     : `Сектор ${sectorNumber + 1}, ряд ${rowNumber + 1}, место ${placeNumber + 1}`
@@ -311,7 +314,7 @@ class Places extends React.Component {
                                 onPlaceClick={this.handlePlaceClicked} />
                         </div>
                     </div>
-                    <div className="row mt-4 justify-content-center">
+                    <div className="row mt-4 mb-1 justify-content-center">
                         <div className="col-auto">
                             <Screen />
                         </div>
@@ -462,7 +465,7 @@ class Places extends React.Component {
     fillEmpty = () => {
         this.setState(state => ({
             sectors: state.sectors.map(sector => sector.map(row => row.map(place => {
-                return place.name ? place : { name: state.fillName, color: state.fillColor };
+                return place.name ? place : { name: state.fillName, color: state.fillColor, fontColor: this.emptyPlace.fontColor };
             })))
         }));
     }
@@ -497,7 +500,7 @@ class Places extends React.Component {
                         if (index == state.row - 1)
                             return row.map((place, index) => {
                                 if (index == state.place - 1)
-                                    return { name: state.name, color: state.color };
+                                    return { name: state.name, color: state.color, fontColor: this.emptyPlace.fontColor };
                                 else return place;
                             });
                         else return row;
@@ -515,7 +518,7 @@ class Places extends React.Component {
                         if (index == state.row - 1)
                             return row.map((place, index) => {
                                 if (index == state.place - 1)
-                                    return { name: state.name, color: state.color };
+                                    return { name: state.name, color: state.color, fontColor: this.emptyPlace.fontColor };
                                 else return place;
                             });
                         else return row;
@@ -548,6 +551,24 @@ class Places extends React.Component {
                             return row.map((place, index) => {
                                 if (index == state.place - 1)
                                     return { ...this.emptyPlace };
+                                else return place;
+                            });
+                        else return row;
+                    })
+                else return sector;
+            })
+        }), () => console.log(this.state.sectors));
+    }
+
+    highlightPlace = (sectorNumber, rowNumber, placeNumber) => {
+        this.setState(state => ({
+            sectors: state.sectors.map((sector, index) => {
+                if (index == sectorNumber)
+                    return sector.map((row, index) => {
+                        if (index == rowNumber)
+                            return row.map((place, index) => {
+                                if (index == placeNumber)
+                                    return { name: state.name, color: state.color, fontColor: this.highlightColor };
                                 else return place;
                             });
                         else return row;

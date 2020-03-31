@@ -42,7 +42,7 @@ const Sector = ({ fontSize, sector, sectorSize, sectorNumber, onPlaceClick, show
     }
 
     return (
-        <table className="table-places">
+        <table style={{ background: "white" }} className="table-places">
             {headers}
             <tbody>
                 {places}
