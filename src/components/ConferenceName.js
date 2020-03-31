@@ -1,12 +1,17 @@
 import React from "react";
 
+/* СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ
+IV Военно-научной конференции
+"Роботизация Вооруженных Сил Российской Федерации"
+от Министерства обороны Российской Федерации */
+
 const ConferenceName = ({ onCLick, children }) => (
-    <h3
+    <pre
         style={{ cursor: "pointer" }}
         onClick={onCLick}
-        className="text-center">
+        className="h3 text-center">
         {children}
-    </h3>
+    </pre>
 );
 
 export default ConferenceName;

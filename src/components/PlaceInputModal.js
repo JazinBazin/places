@@ -22,13 +22,12 @@ class PlaceInputModal extends React.Component {
     handleColorChange = color => this.setState({ color: color });
 
     handleOkClicked = () => {
-        if (!this.props.allowEmpty)
-            if (!this.props.allowEmpty && this.state.name.length == 0) {
-                this.setState({
-                    nameErrorMessage: 'Заполните поле "Участник"'
-                })
-                return;
-            }
+        if (!this.props.allowEmpty && this.state.name.length == 0) {
+            this.setState({
+                nameErrorMessage: 'Заполните поле "Участник"'
+            })
+            return;
+        }
         this.props.handleConfirmClicked(this.state.name, this.state.color);
     }
 

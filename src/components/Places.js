@@ -6,12 +6,16 @@ import ModalWindow from "./ModalWindow";
 import PlaceInputModal from "./PlaceInputModal";
 import FontSizeForm from "./FontSizeForm";
 import ConferenceName from "./ConferenceName";
+import ConferenceNameInputModal from "./ConferenceNameInputModal";
 
 /*;
-    1. Заголовок конференции
+    1. Заголовок конференции +++
     2. Расположение экранов
-    3. Скрытие формы для редактирования
+    3. Скрытие формы для редактирования +++
     4. Поменять (добавить) цвета
+    5. Отобразить входы и выходы
+    6. Крайние сектора по диагонали
+    7. Выделение места при поиске
 */
 
 class Places extends React.Component {
@@ -35,14 +39,18 @@ class Places extends React.Component {
             row: "",
             place: "",
             color: "#ABB8C3",
+            sectors: this.emptySectors,
             searchName: "",
             fillName: "",
             fillColor: "#FFFFFF",
             fontSize: 1,
-            conferenceName: "СХЕМА РАЗМЕЩЕНИЯ",
+            conferenceName: 'СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ\n' +
+                'IV Военно-научной конференции\n' +
+                '"Роботизация Вооруженных Сил Российской Федерации"\n' +
+                'от Министерства обороны Российской Федерации',
             modalWindow: null,
             placeInputModal: null,
-            sectors: this.emptySectors,
+            conferenceNameInputModal: null,
         };
     }
 
@@ -176,14 +184,36 @@ class Places extends React.Component {
         });
     }
 
+    handleConferenceNameClick = () => {
+        this.setState({
+            conferenceNameInputModal: <ConferenceNameInputModal
+                conferenceName={this.state.conferenceName}
+                handleConfirmClicked={this.handleConferenceNameConfirmed}
+                handleCloseClicked={this.handleConferenceNameModalClose} />
+        });
+    }
+
+    handleConferenceNameConfirmed = (conferenceName) => {
+        console.log(conferenceName);
+        this.setState({
+            conferenceName: conferenceName,
+            conferenceNameInputModal: null
+        });
+    }
+
+    handleConferenceNameModalClose = () => {
+        this.setState({ conferenceNameInputModal: null });
+    }
+
     render() {
         const fontSizeValue = `${this.state.fontSize}em`;
         return (
             <React.Fragment>
                 {this.state.modalWindow}
                 {this.state.placeInputModal}
-                <div className="row justify-content-center">
-                    <div className="col-6 border rounded p-2 mt-2">
+                {this.state.conferenceNameInputModal}
+                <div className="row justify-content-center align-items-start">
+                    <div className="col-6">
                         <PlacesForm
                             name={this.state.name} handleNameChange={this.handleNameChange}
                             row={this.state.row} handleRowChange={this.handleRowChange}
@@ -200,21 +230,19 @@ class Places extends React.Component {
                             color={this.state.color} onColorChange={this.handleColorChange} />
                     </div>
                     <div className="col-3 ml-2">
+                        <FontSizeForm
+                            fontSize={this.state.fontSize}
+                            onFontSizeChange={this.handleFontSizeChanged} />
                         <SearchForm
                             searchName={this.state.searchName}
                             handleSearchNameChanged={this.handleSearchNameChanged}
                             handleSearchButtonClicked={this.handleSearchButtonClicked} />
-                        <FontSizeForm
-                            fontSize={this.state.fontSize}
-                            onFontSizeChange={this.handleFontSizeChanged} />
                     </div>
                 </div>
                 <div className="row mt-4 justify-content-center">
-                    <ConferenceName onCLick={this.handleConferenceNameClick}>
-                        СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ<br />
-                        IV Военно-научной конференции<br />
-                        "Роботизация Вооруженных Сил Российской Федерации"<br />
-                        от Министерства обороны Российской Федерации<br />
+                    <ConferenceName
+                        onCLick={this.handleConferenceNameClick}>
+                        {this.state.conferenceName}
                     </ConferenceName>
                 </div>
                 <div className="row mt-4">
