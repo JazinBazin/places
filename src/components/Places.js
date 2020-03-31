@@ -568,7 +568,7 @@ class Places extends React.Component {
                         if (index == rowNumber)
                             return row.map((place, index) => {
                                 if (index == placeNumber)
-                                    return { name: state.name, color: state.color, fontColor: this.highlightColor };
+                                    return { name: place.name, color: place.color, fontColor: this.highlightColor };
                                 else return place;
                             });
                         else return row;
