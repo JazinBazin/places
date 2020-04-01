@@ -19,7 +19,7 @@ import Screen from "./Screen";
     5. Отобразить входы и выходы +++
     6. Крайние сектора по диагонали +++
     7. Выделение места при поиске +++
-    8. Подобрать фон +++
+    8. Подобрать фон ---
     9. Записывать название конференции +++
     10. Заполнить места +++
     11. Количество операторов на подсадку (по ротам)
@@ -211,7 +211,6 @@ class Places extends React.Component {
     }
 
     handleConferenceNameConfirmed = (conferenceName) => {
-        console.log(conferenceName);
         this.setState({
             conferenceName: conferenceName,
             conferenceNameInputModal: null
@@ -538,7 +537,7 @@ class Places extends React.Component {
                     })
                 else return sector;
             })
-        }), () => console.log(this.state.sectors));
+        }));
     }
 
     replacePerson = () => {
@@ -556,7 +555,7 @@ class Places extends React.Component {
                     })
                 else return sector;
             })
-        }), () => console.log(this.state.sectors));
+        }));
     }
 
     removePerson = () => {
@@ -570,7 +569,7 @@ class Places extends React.Component {
                     })
                 })
             })
-        }), () => console.log(this.state.sectors));
+        }));
     }
 
     clearPlace = () => {
@@ -588,7 +587,7 @@ class Places extends React.Component {
                     })
                 else return sector;
             })
-        }), () => console.log(this.state.sectors));
+        }));
     }
 
     highlightPlace = (sectorNumber, rowNumber, placeNumber) => {
@@ -606,7 +605,7 @@ class Places extends React.Component {
                     })
                 else return sector;
             })
-        }), () => console.log(this.state.sectors));
+        }));
     }
 }
 
