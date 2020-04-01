@@ -19,11 +19,11 @@ import Screen from "./Screen";
     5. Отобразить входы и выходы +++
     6. Крайние сектора по диагонали +++
     7. Выделение места при поиске +++
-    8. Подобрать фон ---
+    8. Подобрать фон +++
     9. Записывать название конференции +++
     10. Заполнить места +++
-    11. Количество операторов на подсадку (по ротам)
-    12. Добавить цвета +++
+    11. Добавить цвета +++
+    12. Кнопки "Изменить цвет" и "Изменить имя"
 */
 
 class Places extends React.Component {
@@ -51,13 +51,13 @@ class Places extends React.Component {
             sector: "",
             row: "",
             place: "",
-            color: "#ABB8C3",
+            color: "#F5CBA7",
             sectors: this.emptySectors,
             searchName: "",
             fillName: "",
             fillColor: "#FFFFFF",
             fontSize: 1,
-            formsHidden: true,
+            formsHidden: false,
             conferenceName: 'СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ\n' +
                 'IV Военно-научной конференции\n' +
                 '"Роботизация Вооруженных Сил Российской Федерации"\n' +
@@ -225,6 +225,18 @@ class Places extends React.Component {
         this.setState({ formsHidden: hidden });
     }
 
+    handleUpdatePersonClicked = () => {
+        if (this.checkName()) {
+            this.setState({
+                placeInputModal: <PlaceInputModal
+                    name={this.state.name}
+                    color={this.state.color}
+                    handleConfirmClicked={this.updatePerson}
+                    handleCloseClicked={this.handlePlaceInputModalClose} />
+            });
+        }
+    }
+
     render() {
         const fontSizeValue = `${this.state.fontSize}em`;
         const display = this.state.formsHidden ? "none" : "flex";
@@ -237,7 +249,7 @@ class Places extends React.Component {
                 <div style={{ position: "relative" }}>
                     <HideButton handleClick={this.handleHideButtonClicked} position="fixed" hidden={this.state.formsHidden} />
                     <div style={{ display: display }} className="row justify-content-center align-items-start">
-                        <div className="col-6">
+                        <div className="col-7">
                             <PlacesForm
                                 name={this.state.name} handleNameChange={this.handleNameChange}
                                 row={this.state.row} handleRowChange={this.handleRowChange}
@@ -251,7 +263,8 @@ class Places extends React.Component {
                                 handleSaveButtonClicked={this.handleSaveButtonClicked}
                                 handleLoadButtonClicked={this.handleLoadButtonClicked}
                                 handleFillButtonClicked={this.handleFillButtonClicked}
-                                color={this.state.color} onColorChange={this.handleColorChange} />
+                                color={this.state.color} onColorChange={this.handleColorChange}
+                                handleUpdatePersonClicked={this.handleUpdatePersonClicked} />
                         </div>
                         <div className="col-3 ml-2">
                             <FontSizeForm
@@ -605,6 +618,23 @@ class Places extends React.Component {
                     })
                 else return sector;
             })
+        }));
+    }
+
+    updatePerson = (name, color) => {
+        this.setState(state => ({
+            placeInputModal: null,
+            sectors: state.sectors.map(sector => {
+                return sector.map(row => {
+                    return row.map(place => {
+                        if (place.name == state.name)
+                            return { name, color, fontColor: place.fontColor };
+                        else return place;
+                    })
+                })
+            }),
+            name: name,
+            color: color,
         }));
     }
 }

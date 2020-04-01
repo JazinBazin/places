@@ -17,6 +17,7 @@ const PlacesForm = ({
     handleLoadButtonClicked,
     handleFillButtonClicked,
     color, onColorChange,
+    handleUpdatePersonClicked,
 }) => {
     const [hidden, setHidden] = useState(false);
     const display = hidden ? "none" : "block";
@@ -25,7 +26,7 @@ const PlacesForm = ({
             className="border rounded p-2 mt-2"
             style={{ position: "relative" }}>
             <h4 className="text-center mb-0">Распределение мест</h4>
-            <HideButton handleClick={setHidden} position="absolute"/>
+            <HideButton handleClick={setHidden} position="absolute" />
             <div style={{ display: display }}>
                 <div className="form-row mt-2">
                     <div className="col-4">
@@ -84,43 +85,49 @@ const PlacesForm = ({
                             type="button"
                             onClick={handleAddButtonClicked}>
                             Добавить
-                    </button>
-                        <button
-                            className="btn btn-primary btn-sm mr-2"
-                            type="button"
-                            onClick={handleRemovePersonButtonClicked}>
-                            Удалить участника
-                    </button>
-                        <button
-                            className="btn btn-primary btn-sm mr-2"
-                            type="button"
-                            onClick={handleClearPlaceButtonClicked}>
-                            Освободить место
-                    </button>
+                        </button>
                         <button
                             className="btn btn-primary btn-sm mr-2"
                             type="button"
                             onClick={handleReplaceButtonClicked}>
                             Заменить
-                    </button>
+                        </button>
                         <button
                             className="btn btn-primary btn-sm mr-2"
-                            type="reset"
+                            type="button"
+                            onClick={handleClearPlaceButtonClicked}>
+                            Освободить место
+                        </button>
+                        <button
+                            className="btn btn-primary btn-sm mr-2"
+                            type="button"
+                            onClick={handleUpdatePersonClicked}>
+                            Изменить участника
+                        </button>
+                        <button
+                            className="btn btn-primary btn-sm mr-2"
+                            type="button"
+                            onClick={handleRemovePersonButtonClicked}>
+                            Удалить участника
+                        </button>
+                        <button
+                            className="btn btn-primary btn-sm mr-2"
+                            type="button"
                             onClick={handleFillButtonClicked}>
                             Заполнить пустые
-                    </button>
+                        </button>
                         <button
                             className="btn btn-primary btn-sm mr-2"
                             type="reset"
                             onClick={handleResetButtonClicked}>
                             Очистить
-                    </button>
+                        </button>
                         <button
                             className="btn btn-primary btn-sm mr-2"
-                            type="reset"
+                            type="button"
                             onClick={handleSaveButtonClicked}>
                             Сохранить
-                    </button>
+                        </button>
                         <label className="btn btn-primary btn-sm m-0">
                             Загрузить <input type="file" accept="application/json" onChange={handleLoadButtonClicked} hidden />
                         </label>
