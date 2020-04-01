@@ -5,29 +5,44 @@ import React from "react";
 class HideButton extends React.Component {
     constructor(props) {
         super(props);
+        this.lineStyle = { stroke: "rgb(0, 0, 0)", strokeWidth: "2" };
+        this.arrowDown = (
+            <svg width="1em" height="0.75em">
+                <line x1="0" y1="0" x2="50%" y2="100%" style={this.lineStyle} />
+                <line x1="50%" y1="100%" x2="100%" y2="0" style={this.lineStyle} />
+            </svg>
+        )
+        this.arrowUp = (
+            <svg width="1em" height="0.75em">
+                <line x1="0" y1="100%" x2="50%" y2="0" style={this.lineStyle} />
+                <line x1="50%" y1="0" x2="100%" y2="100%" style={this.lineStyle} />
+            </svg>
+        )
         this.state = {
             hidden: this.props.hidden,
+            hideButton: this.arrowUp
         }
     }
 
     handleClick = () => {
-        this.setState(state => ({ hidden: !state.hidden }), () => this.props.handleClick(this.state.hidden));;
+        this.setState(state => ({
+            hidden: !state.hidden,
+        }), () => this.props.handleClick(this.state.hidden));;
     }
 
     render() {
-        const button = this.state.hidden ? "&#xFE40;" : "&#xFE3F;"
-        const top = this.state.hidden ? "0.2em" : "-0.3em";;
+        const button = this.state.hidden ? this.arrowDown : this.arrowUp;
         return (
             <span style={{
                 display: "block",
                 position: this.props.position,
-                top: top,
-                right: "0.3em",
+                top: "0.2em",
+                right: "0.5em",
                 cursor: "pointer",
-                fontSize: "1.5em",
             }}
-                onClick={this.handleClick}
-                dangerouslySetInnerHTML={{ __html: button }} />
+                onClick={this.handleClick}>
+                {button}
+            </span>
         );
     }
 }
