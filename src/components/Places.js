@@ -23,7 +23,7 @@ import Screen from "./Screen";
     9. Записывать название конференции +++
     10. Заполнить места +++
     11. Добавить цвета +++
-    12. Кнопки "Изменить цвет" и "Изменить имя"
+    12. Кнопки "Изменить цвет" и "Изменить имя" +++
 */
 
 class Places extends React.Component {
@@ -249,7 +249,7 @@ class Places extends React.Component {
                 <div style={{ position: "relative" }}>
                     <HideButton handleClick={this.handleHideButtonClicked} position="fixed" hidden={this.state.formsHidden} />
                     <div style={{ display: display }} className="row justify-content-center align-items-start">
-                        <div className="col-7">
+                        <div className="col-8">
                             <PlacesForm
                                 name={this.state.name} handleNameChange={this.handleNameChange}
                                 row={this.state.row} handleRowChange={this.handleRowChange}
