@@ -10,18 +10,20 @@ import ConferenceNameInputModal from "./ConferenceNameInputModal";
 import HideButton from "./HideButton";
 import Screen from "./Screen";
 
-/*;
+/*
     1. Заголовок конференции +++
     2. Расположение экранов +++
     3. Скрытие форм для редактирования +++
     4. Скрытие области редактирования +++
     4. Поменять (добавить) цвета +++
-    5. Отобразить входы и выходы
-    6. Крайние сектора по диагонали
+    5. Отобразить входы и выходы +++
+    6. Крайние сектора по диагонали +++
     7. Выделение места при поиске +++
-    8. Подобрать фон ---
+    8. Подобрать фон +++
     9. Записывать название конференции +++
-    10. Заполнить места
+    10. Заполнить места +++
+    11. Количество операторов на подсадку (по ротам)
+    12. Добавить цвета +++
 */
 
 class Places extends React.Component {
@@ -38,6 +40,9 @@ class Places extends React.Component {
         this.emptySectors = this.sectorSizes.map(sectorSize => {
             return this.createSector(sectorSize.rows, sectorSize.cols, this.emptyPlace);
         });
+
+        this.wallLineStyle = { stroke: "rgb(0,0,0)", strokeWidth: "4" };
+        this.doorLineStyle = { stroke: "rgb(0,0,0)", strokeWidth: "2" };
 
         this.highlightColor = "#FF0000";
 
@@ -259,70 +264,91 @@ class Places extends React.Component {
                                 handleSearchButtonClicked={this.handleSearchButtonClicked} />
                         </div>
                     </div>
-                    <div className="row mt-4 justify-content-center">
+                    <div className="row mt-4 mb-3 justify-content-center">
                         <ConferenceName
                             onCLick={this.handleConferenceNameClick}>
                             {this.state.conferenceName}
                         </ConferenceName>
                     </div>
-                    <div className="row mt-4 justify-content-between">
-                        <div className="col-auto">
-                            <Screen />
+                    <div style={{
+                        borderLeft: "0.1em solid black",
+                        borderRight: "0.1em solid black"
+                    }} className="mb-3">
+                        <svg height="2em" width="100%">
+                            <line x1="0" y1="0" x2="20%" y2="0" style={this.wallLineStyle} />
+                            <line x1="20%" y1="0" x2="25%" y2="100%" style={this.doorLineStyle} />
+                            <line x1="28%" y1="0" x2="70%" y2="0" style={this.wallLineStyle} />
+                            <line x1="70%" y1="0" x2="75%" y2="100%" style={this.doorLineStyle} />
+                            <line x1="78%" y1="0" x2="100%" y2="0" style={this.wallLineStyle} />
+                        </svg>
+                        <div className="pl-3 pr-3">
+                            <div className="row mt-2 justify-content-between">
+                                <div className="col-auto">
+                                    <Screen />
+                                </div>
+                                <div className="col-auto">
+                                    <Screen />
+                                </div>
+                                <div className="col-auto">
+                                    <Screen />
+                                </div>
+                            </div>
+                            <div className="row mt-4">
+                                <div style={{ width: "24%", margin: "0 auto" }}>
+                                    <h3 className="text-center">Президиум</h3>
+                                    <Sector
+                                        fontSize={fontSizeValue}
+                                        sector={this.state.sectors[3]}
+                                        sectorSize={this.sectorSizes[3]}
+                                        sectorNumber={4}
+                                        onPlaceClick={this.handlePlaceClicked} />
+                                </div>
+                            </div>
+                            <div className="row mt-4 mb-3">
+                                <div style={{ width: "25%", marginLeft: "1%", marginRight: "0.5%" }}>
+                                    <h4 className="lead text-center">Сектор 1</h4>
+                                    <Sector
+                                        showHeaders
+                                        fontSize={fontSizeValue}
+                                        sector={this.state.sectors[0]}
+                                        sectorSize={this.sectorSizes[0]}
+                                        sectorNumber={1}
+                                        onPlaceClick={this.handlePlaceClicked} />
+                                </div>
+                                <div className="mt-5" style={{ width: "45%", marginLeft: "1%", marginRight: "1%" }}>
+                                    <h4 className="lead text-center">Сектор 2</h4>
+                                    <Sector
+                                        showHeaders
+                                        fontSize={fontSizeValue}
+                                        sector={this.state.sectors[1]}
+                                        sectorSize={this.sectorSizes[1]}
+                                        sectorNumber={2}
+                                        onPlaceClick={this.handlePlaceClicked} />
+                                </div>
+                                <div style={{ width: "25%", marginLeft: "0.5%", marginRight: "1%" }}>
+                                    <h4 className="lead text-center">Сектор 3</h4>
+                                    <Sector
+                                        fontSize={fontSizeValue}
+                                        showHeaders
+                                        sector={this.state.sectors[2]}
+                                        sectorSize={this.sectorSizes[2]}
+                                        sectorNumber={3}
+                                        onPlaceClick={this.handlePlaceClicked} />
+                                </div>
+                            </div>
+                            <div className="row mt-4 mb-1 justify-content-center">
+                                <div className="col-auto">
+                                    <Screen />
+                                </div>
+                            </div>
                         </div>
-                        <div className="col-auto">
-                            <Screen />
-                        </div>
-                        <div className="col-auto">
-                            <Screen />
-                        </div>
-                    </div>
-                    <div className="row mt-4">
-                        <div style={{ width: "24%", margin: "0 auto" }}>
-                            <h3 className="text-center">Президиум</h3>
-                            <Sector
-                                fontSize={fontSizeValue}
-                                sector={this.state.sectors[3]}
-                                sectorSize={this.sectorSizes[3]}
-                                sectorNumber={4}
-                                onPlaceClick={this.handlePlaceClicked} />
-                        </div>
-                    </div>
-                    <div className="row mt-4 mb-3">
-                        <div style={{ width: "25%", marginLeft: "1%", marginRight: "0.5%" }}>
-                            <h4 className="lead text-center">Сектор 1</h4>
-                            <Sector
-                                showHeaders
-                                fontSize={fontSizeValue}
-                                sector={this.state.sectors[0]}
-                                sectorSize={this.sectorSizes[0]}
-                                sectorNumber={1}
-                                onPlaceClick={this.handlePlaceClicked} />
-                        </div>
-                        <div style={{ width: "45%", marginLeft: "1%", marginRight: "1%" }}>
-                            <h4 className="lead text-center">Сектор 2</h4>
-                            <Sector
-                                showHeaders
-                                fontSize={fontSizeValue}
-                                sector={this.state.sectors[1]}
-                                sectorSize={this.sectorSizes[1]}
-                                sectorNumber={2}
-                                onPlaceClick={this.handlePlaceClicked} />
-                        </div>
-                        <div style={{ width: "25%", marginLeft: "0.5%", marginRight: "1%" }}>
-                            <h4 className="lead text-center">Сектор 3</h4>
-                            <Sector
-                                fontSize={fontSizeValue}
-                                showHeaders
-                                sector={this.state.sectors[2]}
-                                sectorSize={this.sectorSizes[2]}
-                                sectorNumber={3}
-                                onPlaceClick={this.handlePlaceClicked} />
-                        </div>
-                    </div>
-                    <div className="row mt-4 mb-1 justify-content-center">
-                        <div className="col-auto">
-                            <Screen />
-                        </div>
+                        <svg height="2em" width="100%">
+                            <line x1="0" y1="100%" x2="20%" y2="100%" style={this.wallLineStyle} />
+                            <line x1="20%" y1="100%" x2="25%" y2="0" style={this.doorLineStyle} />
+                            <line x1="28%" y1="100%" x2="70%" y2="100%" style={this.wallLineStyle} />
+                            <line x1="70%" y1="100%" x2="75%" y2="0" style={this.doorLineStyle} />
+                            <line x1="78%" y1="100%" x2="100%" y2="100%" style={this.wallLineStyle} />
+                        </svg>
                     </div>
                 </div>
             </React.Fragment >

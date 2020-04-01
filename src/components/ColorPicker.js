@@ -1,6 +1,9 @@
 import React from "react";
 import { TwitterPicker } from 'react-color';
 
+// https://htmlcolorcodes.com/color-chart/
+// colors={['#FF9F97', '#FCF4EC', '#FAEAA1', '#FFE981', '#7BDCB5', '#00D084', '#8ED1FC', "#C9D4C5", '#ABB8C3', '#F78DA7' ]}
+
 class ColorPicker extends React.Component {
     constructor(props) {
         super(props);
@@ -39,7 +42,10 @@ class ColorPicker extends React.Component {
                     }}>
                     <div className="col pr-0">
                         <TwitterPicker
-                            colors={['#FF9F97', '#FCF4EC', '#FAEAA1', '#FFE981', '#7BDCB5', '#00D084', '#8ED1FC', "#C9D4C5", '#ABB8C3', '#F78DA7' ]}
+                            colors={[
+                                '#E6B0AA', '#F5B7B1', '#D7BDE2', '#D2B4DE', '#A9CCE3', '#AED6F1', '#A3E4D7',
+                                '#A2D9CE', '#A9DFBF', '#ABEBC6', '#F9E79F', '#FAD7A0', '#F5CBA7', '#EDBB99',
+                                '#F7F9F9', '#E5E7E9', '#CCD1D1',]}
                             color={this.props.color}
                             triangle="top-left"
                             onChange={this.handleChange} />
