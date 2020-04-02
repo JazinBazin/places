@@ -444,7 +444,8 @@ class Places extends React.Component {
     handleSaveButtonClicked = () => {
         const data = {
             "conferenceName": this.state.conferenceName,
-            "sectors": this.state.sectors
+            "sectors": this.state.sectors,
+            "fontSize": this.state.fontSize
         };
 
         const blob = new Blob([JSON.stringify(data)], { type: "application/json;charset=utf-8" });
@@ -458,7 +459,8 @@ class Places extends React.Component {
             const data = JSON.parse(fileReader.result);
             this.setState({
                 conferenceName: data.conferenceName,
-                sectors: data.sectors
+                sectors: data.sectors,
+                fontSize: data.fontSize
             });
         }
         fileReader.readAsText(file, "UTF-8");
