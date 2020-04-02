@@ -24,6 +24,7 @@ import Screen from "./Screen";
     10. Заполнить места +++
     11. Добавить цвета +++
     12. Кнопки "Изменить цвет" и "Изменить имя" +++
+    13. Заполнение по секторам и рядам (с - по, или полностью)
 */
 
 class Places extends React.Component {
@@ -57,7 +58,7 @@ class Places extends React.Component {
             fillName: "",
             fillColor: "#FFFFFF",
             fontSize: 1,
-            formsHidden: false,
+            formsHidden: true,
             conferenceName: 'СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ\n' +
                 'IV Военно-научной конференции\n' +
                 '"Роботизация Вооруженных Сил Российской Федерации"\n' +
@@ -249,7 +250,7 @@ class Places extends React.Component {
                 <div style={{ position: "relative" }}>
                     <HideButton handleClick={this.handleHideButtonClicked} position="fixed" hidden={this.state.formsHidden} />
                     <div style={{ display: display }} className="row justify-content-center align-items-start">
-                        <div className="col-8">
+                        <div className="col-7">
                             <PlacesForm
                                 name={this.state.name} handleNameChange={this.handleNameChange}
                                 row={this.state.row} handleRowChange={this.handleRowChange}
@@ -276,7 +277,7 @@ class Places extends React.Component {
                                 handleSearchButtonClicked={this.handleSearchButtonClicked} />
                         </div>
                     </div>
-                    <div className="row mt-4 mb-3 justify-content-center">
+                    <div className="row mt-2 mb-2 justify-content-center">
                         <ConferenceName
                             onCLick={this.handleConferenceNameClick}>
                             {this.state.conferenceName}
@@ -316,7 +317,7 @@ class Places extends React.Component {
                                         onPlaceClick={this.handlePlaceClicked} />
                                 </div>
                             </div>
-                            <div className="row mt-4 mb-3">
+                            <div className="row mt-2 mb-3">
                                 <div style={{ width: "25%", marginLeft: "1%", marginRight: "0.5%" }}>
                                     <h4 className="lead text-center">Сектор 1</h4>
                                     <Sector
@@ -348,7 +349,7 @@ class Places extends React.Component {
                                         onPlaceClick={this.handlePlaceClicked} />
                                 </div>
                             </div>
-                            <div className="row mt-4 mb-1 justify-content-center">
+                            <div className="row mt-3 mb-1 justify-content-center">
                                 <div className="col-auto">
                                     <Screen />
                                 </div>

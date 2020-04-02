@@ -95,26 +95,26 @@ const PlacesForm = ({
                         <button
                             className="btn btn-primary btn-sm mr-2"
                             type="button"
+                            onClick={handleUpdatePersonClicked}>
+                            Изменить
+                        </button>
+                        <button
+                            className="btn btn-primary btn-sm mr-2"
+                            type="button"
                             onClick={handleClearPlaceButtonClicked}>
                             Освободить место
                         </button>
                         <button
                             className="btn btn-primary btn-sm mr-2"
                             type="button"
-                            onClick={handleUpdatePersonClicked}>
-                            Изменить участника
-                        </button>
-                        <button
-                            className="btn btn-primary btn-sm mr-2"
-                            type="button"
                             onClick={handleRemovePersonButtonClicked}>
-                            Удалить участника
+                            Удалить
                         </button>
                         <button
                             className="btn btn-primary btn-sm mr-2"
                             type="button"
                             onClick={handleFillButtonClicked}>
-                            Заполнить пустые
+                            Заполнить
                         </button>
                         <button
                             className="btn btn-primary btn-sm mr-2"
