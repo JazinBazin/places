@@ -156,7 +156,7 @@ class Places extends React.Component {
             for (let place = placeFrom; place < placeTo; ++place) {
                 if (this.state.sectors[sector][row][place].name.length != 0) {
                     this.showModalWindow("Распределение мест",
-                        `Узазанное место занято - ${this.state.sectors[sector][row][place].name} (сектор ${sector}, ряд ${row}, место ${place})`);
+                        `Узазанное место занято - ${this.state.sectors[sector][row][place].name} (сектор ${sector + 1}, ряд ${row + 1}, место ${place + 1})`);
                     return false;
                 }
             }
@@ -176,7 +176,7 @@ class Places extends React.Component {
             for (let place = placeFrom; place < placeTo; ++place) {
                 if (this.state.sectors[sector][row][place].name.length == 0) {
                     this.showModalWindow("Распределение мест",
-                        `Узазанное место свободно (сектор ${sector}, ряд ${row}, место ${place})`);
+                        `Узазанное место свободно (сектор ${sector + 1}, ряд ${row + 1}, место ${place + 1})`);
                     return false;
                 }
             }
