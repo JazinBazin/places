@@ -24,12 +24,14 @@ import Screen from "./Screen";
     10. Заполнить места +++
     11. Добавить цвета +++
     12. Кнопки "Изменить цвет" и "Изменить имя" +++
-    13. Заполнение по секторам и рядам (от - до, или полностью)
+    13. Заполнение по секторам и рядам (от - до)
     14. Изменить названия кнопок +++
     15. Кнопка подсчёта +++
 */
 
 class Places extends React.Component {
+
+    //+++
     constructor(props) {
         super(props);
 
@@ -52,8 +54,10 @@ class Places extends React.Component {
         this.state = {
             name: "",
             sector: "",
-            row: "",
-            place: "",
+            rowFrom: "",
+            rowTo: "",
+            placeFrom: "",
+            placeTo: "",
             color: "#F5CBA7",
             sectors: this.emptySectors,
             searchName: "",
@@ -71,24 +75,146 @@ class Places extends React.Component {
         };
     }
 
-    handleNameChange = e => this.setState({ name: e.target.value });
+    ///+++
+    checkSector = () => {
+        const sector = this.state.sector;
+        if (sector.length == 0) {
+            this.showModalWindow("Распределение мест", "Введите номер сектора");
+            return false;
+        }
+        if (sector > this.state.sectors.length) {
+            this.showModalWindow("Распределение мест",
+                `Номер сектора должен быть в диапазоне от 1 до ${this.state.sectors.length} включительно`);
+            return false;
+        }
+        return true;
+    }
 
+    //+++
+    checkRow = () => {
+        const sector = this.state.sector;
+        const rowFrom = this.state.rowFrom;
+        const rowTo = this.state.rowTo;
+        if (rowFrom.length == 0) {
+            this.showModalWindow("Распределение мест", "Введите номер начального ряда");
+            return false;
+        }
+        if (rowTo.length == 0) {
+            this.showModalWindow("Распределение мест", "Введите номер конечного ряда");
+            return false;
+        }
+        if (rowFrom > this.sectorSizes[sector - 1].rows || rowTo > this.sectorSizes[sector - 1].rows) {
+            this.showModalWindow("Распределение мест",
+                `Номер ряда в секторе ${sector} должен быть в диапазоне от 1
+                 до ${this.sectorSizes[sector - 1].rows} включительно`);
+            return false;
+        }
+        if (rowFrom > rowTo) {
+            this.showModalWindow("Распределение мест",
+                "Номер начального ряда должен быть меньше либо равен номеру конечного ряда");
+            return false;
+        }
+        return true;
+    }
+
+    //+++
+    checkPlace = () => {
+        const sector = this.state.sector;
+        const placeFrom = this.state.placeFrom;
+        const placeTo = this.state.placeTo;
+        if (placeFrom.length == 0) {
+            this.showModalWindow("Распределение мест", "Введите номер начального места");
+            return false;
+        }
+        if (placeTo.length == 0) {
+            this.showModalWindow("Распределение мест", "Введите номер конечного места");
+            return false;
+        }
+        if (placeFrom > this.sectorSizes[sector - 1].cols || placeTo > this.sectorSizes[sector - 1].cols) {
+            this.showModalWindow("Распределение мест",
+                `Номер места в секторе ${sector} должен быть в диапазоне от 1
+                 до ${this.sectorSizes[sector - 1].cols} включительно`);
+            return false;
+        }
+        if (placeFrom > placeTo) {
+            this.showModalWindow("Распределение мест",
+                "Номер начального места должен быть меньше либо равен номеру конечного места");
+            return false;
+        }
+        return true;
+    }
+
+    //+++
+    checkPlaceTaken = () => {
+        const sector = this.state.sector - 1;
+        const rowFrom = this.state.rowFrom - 1;
+        const rowTo = this.state.rowTo;
+        const placeFrom = this.state.placeFrom - 1;
+        const placeTo = this.state.placeTo;
+
+        for (let row = rowFrom; row < rowTo; ++row) {
+            for (let place = placeFrom; place < placeTo; ++place) {
+                if (this.state.sectors[sector][row][place].name.length != 0) {
+                    this.showModalWindow("Распределение мест",
+                        `Узазанное место занято - ${this.state.sectors[sector][row][place].name} (сектор ${sector}, ряд ${row}, место ${place})`);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    //+++
+    checkPlaceEmpty = () => {
+        const sector = this.state.sector - 1;
+        const rowFrom = this.state.rowFrom - 1;
+        const rowTo = this.state.rowTo;
+        const placeFrom = this.state.placeFrom - 1;
+        const placeTo = this.state.placeTo;
+
+        for (let row = rowFrom; row < rowTo; ++row) {
+            for (let place = placeFrom; place < placeTo; ++place) {
+                if (this.state.sectors[sector][row][place].name.length == 0) {
+                    this.showModalWindow("Распределение мест",
+                        `Узазанное место свободно (сектор ${sector}, ряд ${row}, место ${place})`);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    //+++
     handleSectorChange = e => {
         const value = this.checkIsNumberOrEmpty(e.target.value);
-        if (!isNaN(value))
-            this.setState({ sector: value });
+        if (!isNaN(value)) this.setState({ sector: value });
     }
 
-    handleRowChange = e => {
+    //+++
+    handleRowFromChange = e => {
         const value = this.checkIsNumberOrEmpty(e.target.value);
-        if (!isNaN(value)) this.setState({ row: value });
+        if (!isNaN(value)) this.setState({ rowFrom: value });
     }
 
-    handlePlaceChange = e => {
+    //+++
+    handleRowToChange = e => {
         const value = this.checkIsNumberOrEmpty(e.target.value);
-        if (!isNaN(value)) this.setState({ place: value });
+        if (!isNaN(value)) this.setState({ rowTo: value });
     }
 
+    //+++
+    handlePlaceFromChange = e => {
+        const value = this.checkIsNumberOrEmpty(e.target.value);
+        if (!isNaN(value)) this.setState({ placeFrom: value });
+    }
+
+    //+++
+    handlePlaceToChange = e => {
+        const value = this.checkIsNumberOrEmpty(e.target.value);
+        if (!isNaN(value)) this.setState({ placeTo: value });
+    }
+
+    //+++
     handleAddButtonClicked = () => {
         if (this.checkName() && this.checkSector() &&
             this.checkRow() && this.checkPlace() &&
@@ -97,137 +223,55 @@ class Places extends React.Component {
         }
     };
 
+    //+++
     handleRemovePersonButtonClicked = () => {
         if (this.checkName()) {
             this.removePerson();
         }
     }
 
+    //+++
     handleClearPlaceButtonClicked = () => {
         if (this.checkSector() && this.checkRow() && this.checkPlace()) {
             this.clearPlace();
         }
     }
 
+    //+++
     handleReplaceButtonClicked = () => {
         if (this.checkName() && this.checkSector() &&
-            this.checkRow() && this.checkPlace() && this.checkPlaceEmpty()) {
-            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1].name === "")
-                this.addPerson();
-            else
-                this.replacePerson();
+            this.checkRow() && this.checkPlace()) {
+            this.replacePerson();
         }
     }
 
+    //+++
     handleResetButtonClicked = () => {
         this.setState({
             name: "",
             sector: "",
-            row: "",
-            place: "",
+            rowFrom: "",
+            rowTo: "",
+            placeFrom: "",
+            placeTo: "",
             sectors: this.emptySectors
         });
     }
 
-    handleSearchNameChanged = e => this.setState({ searchName: e.target.value });
-
-    handleSearchButtonClicked = () => {
-        if (this.checkSearchName()) {
-            const found = this.state.sectors.some(
-                (sector, sectorNumber) =>
-                    sector.some((row, rowNumber) =>
-                        row.some((place, placeNumber) => {
-                            if (place.name.toLowerCase().includes(this.state.searchName.toLowerCase())) {
-                                this.highlightPlace(sectorNumber, rowNumber, placeNumber);
-                                const message = sectorNumber == 3
-                                    ? `Президиум, место ${placeNumber + 1}`
-                                    : `Сектор ${sectorNumber + 1}, ряд ${rowNumber + 1}, место ${placeNumber + 1}`
-                                this.showModalWindow("Результат поиска", message);
-                                return true;
-                            }
-                        })));
-            if (!found)
-                this.showModalWindow("Результат поиска", "Указанный участник не найден");
-        }
-    }
-
-    handleSaveButtonClicked = () => {
-        const data = {
-            "conferenceName": this.state.conferenceName,
-            "sectors": this.state.sectors
-        };
-
-        const blob = new Blob([JSON.stringify(data)], { type: "application/json;charset=utf-8" });
-        this.saveTextAsFile(blob, "Места.json");
-    }
-
-    handleLoadButtonClicked = (e) => {
-        const file = e.target.files[0];
-        let fileReader = new FileReader();
-        fileReader.onload = () => {
-            const data = JSON.parse(fileReader.result);
-            this.setState({
-                conferenceName: data.conferenceName,
-                sectors: data.sectors
-            });
-        }
-        fileReader.readAsText(file, "UTF-8");
-    }
-
-    handleFillButtonClicked = () => {
-        this.setState({
-            placeInputModal: <PlaceInputModal
-                handleConfirmClicked={this.handleFillEmpty}
-                handleCloseClicked={this.handlePlaceInputModalClose} />
-        });
-    }
-
+    //+++
     handlePlaceClicked = (name, color, sector, row, place) => {
         this.setState({
             name,
             color,
             sector: sector + 1,
-            row: row + 1,
-            place: place + 1
+            rowFrom: row + 1,
+            rowTo: row + 1,
+            placeFrom: place + 1,
+            placeTo: place + 1
         }, () => this.showPlaceInputModal());
     }
 
-    handleFontSizeChanged = (e) => {
-        this.setState({
-            fontSize: e.target.value,
-        });
-    }
-
-    handleColorChange = (color) => {
-        this.setState({
-            color: color
-        });
-    }
-
-    handleConferenceNameClick = () => {
-        this.setState({
-            conferenceNameInputModal: <ConferenceNameInputModal
-                conferenceName={this.state.conferenceName}
-                handleConfirmClicked={this.handleConferenceNameConfirmed}
-                handleCloseClicked={this.handleConferenceNameModalClose} />
-        });
-    }
-
-    handleConferenceNameConfirmed = (conferenceName) => {
-        this.setState({
-            conferenceName: conferenceName,
-            conferenceNameInputModal: null
-        });
-    }
-
-    handleConferenceNameModalClose = () => {
-        this.setState({ conferenceNameInputModal: null });
-    }
-
-    handleHideButtonClicked = (hidden) => {
-        this.setState({ formsHidden: hidden });
-    }
-
+    //+++
     handleUpdatePersonClicked = () => {
         if (this.checkName()) {
             this.setState({
@@ -238,26 +282,6 @@ class Places extends React.Component {
                     handleCloseClicked={this.handlePlaceInputModalClose} />
             });
         }
-    }
-
-    handleCalculateButtonClicked = () => {
-        if (this.checkName()) {
-            const totalPersonCount = this.calculatePersons();
-            this.showModalWindow("Подсчёт мест", `${this.state.name}: ${totalPersonCount}`);
-        }
-    }
-
-    calculatePersons = () => {
-        let totalCount = 0;
-        this.state.sectors.forEach(sector => {
-            sector.forEach(row => {
-                row.forEach(place => {
-                    if (place.name == this.state.name)
-                        ++totalCount;
-                });
-            });
-        });
-        return totalCount;
     }
 
     render() {
@@ -275,9 +299,11 @@ class Places extends React.Component {
                         <div className="col-7">
                             <PlacesForm
                                 name={this.state.name} handleNameChange={this.handleNameChange}
-                                row={this.state.row} handleRowChange={this.handleRowChange}
                                 sector={this.state.sector} handleSectorChange={this.handleSectorChange}
-                                place={this.state.place} handlePlaceChange={this.handlePlaceChange}
+                                rowFrom={this.state.rowFrom} handleRowFromChange={this.handleRowFromChange}
+                                rowTo={this.state.rowTo} handleRowToChange={this.handleRowToChange}
+                                placeFrom={this.state.placeFrom} handlePlaceFromChange={this.handlePlaceFromChange}
+                                placeTo={this.state.placeTo} handlePlaceToChange={this.handlePlaceToChange}
                                 handleAddButtonClicked={this.handleAddButtonClicked}
                                 handleRemovePersonButtonClicked={this.handleRemovePersonButtonClicked}
                                 handleClearPlaceButtonClicked={this.handleClearPlaceButtonClicked}
@@ -391,80 +417,121 @@ class Places extends React.Component {
         );
     }
 
+    handleNameChange = e => this.setState({ name: e.target.value });
+
+    handleSearchNameChanged = e => this.setState({ searchName: e.target.value });
+
+    handleSearchButtonClicked = () => {
+        if (this.checkSearchName()) {
+            const found = this.state.sectors.some(
+                (sector, sectorNumber) =>
+                    sector.some((row, rowNumber) =>
+                        row.some((place, placeNumber) => {
+                            if (place.name.toLowerCase().includes(this.state.searchName.toLowerCase())) {
+                                this.highlightPlace(sectorNumber, rowNumber, placeNumber);
+                                const message = sectorNumber == 3
+                                    ? `Президиум, место ${placeNumber + 1}`
+                                    : `Сектор ${sectorNumber + 1}, ряд ${rowNumber + 1}, место ${placeNumber + 1}`
+                                this.showModalWindow("Результат поиска", message);
+                                return true;
+                            }
+                        })));
+            if (!found)
+                this.showModalWindow("Результат поиска", "Указанный участник не найден");
+        }
+    }
+
+    handleSaveButtonClicked = () => {
+        const data = {
+            "conferenceName": this.state.conferenceName,
+            "sectors": this.state.sectors
+        };
+
+        const blob = new Blob([JSON.stringify(data)], { type: "application/json;charset=utf-8" });
+        this.saveTextAsFile(blob, "Места.json");
+    }
+
+    handleLoadButtonClicked = (e) => {
+        const file = e.target.files[0];
+        let fileReader = new FileReader();
+        fileReader.onload = () => {
+            const data = JSON.parse(fileReader.result);
+            this.setState({
+                conferenceName: data.conferenceName,
+                sectors: data.sectors
+            });
+        }
+        fileReader.readAsText(file, "UTF-8");
+    }
+
+    handleFillButtonClicked = () => {
+        this.setState({
+            placeInputModal: <PlaceInputModal
+                handleConfirmClicked={this.handleFillEmpty}
+                handleCloseClicked={this.handlePlaceInputModalClose} />
+        });
+    }
+
+    handleFontSizeChanged = (e) => {
+        this.setState({
+            fontSize: e.target.value,
+        });
+    }
+
+    handleColorChange = (color) => {
+        this.setState({
+            color: color
+        });
+    }
+
+    handleConferenceNameClick = () => {
+        this.setState({
+            conferenceNameInputModal: <ConferenceNameInputModal
+                conferenceName={this.state.conferenceName}
+                handleConfirmClicked={this.handleConferenceNameConfirmed}
+                handleCloseClicked={this.handleConferenceNameModalClose} />
+        });
+    }
+
+    handleConferenceNameConfirmed = (conferenceName) => {
+        this.setState({
+            conferenceName: conferenceName,
+            conferenceNameInputModal: null
+        });
+    }
+
+    handleConferenceNameModalClose = () => {
+        this.setState({ conferenceNameInputModal: null });
+    }
+
+    handleHideButtonClicked = (hidden) => {
+        this.setState({ formsHidden: hidden });
+    }
+
+    handleCalculateButtonClicked = () => {
+        if (this.checkName()) {
+            const totalPersonCount = this.calculatePersons();
+            this.showModalWindow("Подсчёт мест", `${this.state.name}: ${totalPersonCount}`);
+        }
+    }
+
+    calculatePersons = () => {
+        let totalCount = 0;
+        this.state.sectors.forEach(sector => {
+            sector.forEach(row => {
+                row.forEach(place => {
+                    if (place.name == this.state.name)
+                        ++totalCount;
+                });
+            });
+        });
+        return totalCount;
+    }
+
     checkName = () => {
         const name = this.state.name;
         if (name.length == 0) {
             this.showModalWindow("Распределение мест", "Введите участника");
-            return false;
-        }
-        return true;
-    }
-
-    checkSector = () => {
-        const sector = this.state.sector;
-        if (sector.length == 0) {
-            this.showModalWindow("Распределение мест", "Введите номер сектора");
-            return false;
-        }
-        if (sector > this.state.sectors.length) {
-            this.showModalWindow("Распределение мест",
-                "Номер сектора должен быть в диапазоне от 1 до 4 включительно");
-            return false;
-        }
-        return true;
-    }
-
-    checkRow = () => {
-        const row = this.state.row;
-        const sector = this.state.sector;
-        if (row.length == 0) {
-            this.showModalWindow("Распределение мест", "Введите номер ряда");
-            return false;
-        }
-        if (row > this.sectorSizes[sector - 1].rows) {
-            this.showModalWindow("Распределение мест",
-                `Номер ряда в секторе ${sector} должен быть в диапазоне от 1
-                 до ${this.sectorSizes[sector - 1].rows} включительно`);
-            return false;
-        }
-        return true;
-    }
-
-    checkPlace = () => {
-        const sector = this.state.sector;
-        const place = this.state.place;
-        if (place.length == 0) {
-            this.showModalWindow("Распределение мест", "Введите номер места");
-            return false;
-        }
-        if (place > this.sectorSizes[sector - 1].cols) {
-            this.showModalWindow("Распределение мест",
-                `Номер места в секторе ${sector} должен быть в диапазоне от 1
-                 до ${this.sectorSizes[sector - 1].cols} включительно`);
-            return false;
-        }
-        return true;
-    }
-
-    checkPlaceTaken = () => {
-        const sector = this.state.sector;
-        const row = this.state.row;
-        const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1].name.length != 0) {
-            this.showModalWindow("Распределение мест",
-                `Узазанное место занято: ${this.state.sectors[sector - 1][row - 1][place - 1].name}`);
-            return false;
-        }
-        return true;
-    }
-
-    checkPlaceEmpty = () => {
-        const sector = this.state.sector;
-        const row = this.state.row;
-        const place = this.state.place;
-        if (this.state.sectors[sector - 1][row - 1][place - 1].name.length == 0) {
-            this.showModalWindow("Распределение мест",
-                "Узазанное место свободно");
             return false;
         }
         return true;
@@ -514,10 +581,7 @@ class Places extends React.Component {
             name: name,
             color: color
         }, () => {
-            if (this.state.sectors[this.state.sector - 1][this.state.row - 1][this.state.place - 1].name.length == 0)
-                this.addPerson();
-            else
-                this.replacePerson();
+            this.replacePerson();
         });
     }
 
@@ -559,14 +623,15 @@ class Places extends React.Component {
         downloadLink.click();
     }
 
+    //+++
     addPerson = () => {
         this.setState(state => ({
             sectors: state.sectors.map((sector, index) => {
                 if (index == state.sector - 1)
                     return sector.map((row, index) => {
-                        if (index == state.row - 1)
+                        if (index >= state.rowFrom - 1 && index <= state.rowTo - 1)
                             return row.map((place, index) => {
-                                if (index == state.place - 1)
+                                if (index >= state.placeFrom - 1 && index <= state.placeTo - 1)
                                     return { name: state.name, color: state.color, fontColor: this.emptyPlace.fontColor };
                                 else return place;
                             });
@@ -577,14 +642,15 @@ class Places extends React.Component {
         }));
     }
 
+    //+++
     replacePerson = () => {
         this.setState(state => ({
             sectors: state.sectors.map((sector, index) => {
                 if (index == state.sector - 1)
                     return sector.map((row, index) => {
-                        if (index == state.row - 1)
+                        if (index >= state.rowFrom - 1 && index <= state.rowTo - 1)
                             return row.map((place, index) => {
-                                if (index == state.place - 1)
+                                if (index >= state.placeFrom - 1 && index <= state.placeTo - 1)
                                     return { name: state.name, color: state.color, fontColor: this.emptyPlace.fontColor };
                                 else return place;
                             });
@@ -595,6 +661,7 @@ class Places extends React.Component {
         }));
     }
 
+    //+++
     removePerson = () => {
         this.setState(state => ({
             sectors: state.sectors.map(sector => {
@@ -609,14 +676,15 @@ class Places extends React.Component {
         }));
     }
 
+    //+++
     clearPlace = () => {
         this.setState(state => ({
             sectors: state.sectors.map((sector, index) => {
                 if (index == state.sector - 1)
                     return sector.map((row, index) => {
-                        if (index == state.row - 1)
+                        if (index >= state.rowFrom - 1 && index <= state.rowTo - 1)
                             return row.map((place, index) => {
-                                if (index == state.place - 1)
+                                if (index >= state.placeFrom - 1 && index <= state.placeTo - 1)
                                     return { ...this.emptyPlace };
                                 else return place;
                             });
@@ -627,6 +695,7 @@ class Places extends React.Component {
         }));
     }
 
+    //+++
     highlightPlace = (sectorNumber, rowNumber, placeNumber) => {
         this.setState(state => ({
             sectors: state.sectors.map((sector, index) => {
@@ -645,6 +714,7 @@ class Places extends React.Component {
         }));
     }
 
+    //+++
     updatePerson = (name, color) => {
         this.setState(state => ({
             placeInputModal: null,
