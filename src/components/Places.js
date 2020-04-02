@@ -24,7 +24,7 @@ import Screen from "./Screen";
     10. Заполнить места +++
     11. Добавить цвета +++
     12. Кнопки "Изменить цвет" и "Изменить имя" +++
-    13. Заполнение по секторам и рядам (от - до)
+    13. Заполнение по секторам и рядам (от - до) +++
     14. Изменить названия кнопок +++
     15. Кнопка подсчёта +++
 */
@@ -62,7 +62,7 @@ class Places extends React.Component {
             sectors: this.emptySectors,
             searchName: "",
             fillName: "",
-            fillColor: "#FFFFFF",
+            fillColor: "#E5E7E9",
             fontSize: 1,
             formsHidden: false,
             conferenceName: 'СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ\n' +
@@ -467,6 +467,7 @@ class Places extends React.Component {
     handleFillButtonClicked = () => {
         this.setState({
             placeInputModal: <PlaceInputModal
+                color={this.state.fillColor}
                 handleConfirmClicked={this.handleFillEmpty}
                 handleCloseClicked={this.handlePlaceInputModalClose} />
         });

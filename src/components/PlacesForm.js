@@ -43,6 +43,14 @@ const PlacesForm = ({
                     </div>
                     <div className="col-1">
                         <div className="form-group">
+                            <label>Цвет:</label>
+                            <ColorPicker
+                                color={color}
+                                onColorChange={onColorChange} />
+                        </div>
+                    </div>
+                    <div className="col-1">
+                        <div className="form-group">
                             <label>Сектор:</label>
                             <input
                                 className="form-control"
@@ -97,14 +105,6 @@ const PlacesForm = ({
                                     />
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className="col-1">
-                        <div className="form-group">
-                            <label>Цвет:</label>
-                            <ColorPicker
-                                color={color}
-                                onColorChange={onColorChange} />
                         </div>
                     </div>
                 </div>
