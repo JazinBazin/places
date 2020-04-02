@@ -24,7 +24,9 @@ import Screen from "./Screen";
     10. Заполнить места +++
     11. Добавить цвета +++
     12. Кнопки "Изменить цвет" и "Изменить имя" +++
-    13. Заполнение по секторам и рядам (с - по, или полностью)
+    13. Заполнение по секторам и рядам (от - до, или полностью)
+    14. Изменить названия кнопок +++
+    15. Кнопка подсчёта +++
 */
 
 class Places extends React.Component {
@@ -58,7 +60,7 @@ class Places extends React.Component {
             fillName: "",
             fillColor: "#FFFFFF",
             fontSize: 1,
-            formsHidden: true,
+            formsHidden: false,
             conferenceName: 'СХЕМА РАЗМЕЩЕНИЯ УЧАСТНИКОВ\n' +
                 'IV Военно-научной конференции\n' +
                 '"Роботизация Вооруженных Сил Российской Федерации"\n' +
@@ -238,6 +240,26 @@ class Places extends React.Component {
         }
     }
 
+    handleCalculateButtonClicked = () => {
+        if (this.checkName()) {
+            const totalPersonCount = this.calculatePersons();
+            this.showModalWindow("Подсчёт мест", `${this.state.name}: ${totalPersonCount}`);
+        }
+    }
+
+    calculatePersons = () => {
+        let totalCount = 0;
+        this.state.sectors.forEach(sector => {
+            sector.forEach(row => {
+                row.forEach(place => {
+                    if (place.name == this.state.name)
+                        ++totalCount;
+                });
+            });
+        });
+        return totalCount;
+    }
+
     render() {
         const fontSizeValue = `${this.state.fontSize}em`;
         const display = this.state.formsHidden ? "none" : "flex";
@@ -265,7 +287,8 @@ class Places extends React.Component {
                                 handleLoadButtonClicked={this.handleLoadButtonClicked}
                                 handleFillButtonClicked={this.handleFillButtonClicked}
                                 color={this.state.color} onColorChange={this.handleColorChange}
-                                handleUpdatePersonClicked={this.handleUpdatePersonClicked} />
+                                handleUpdatePersonClicked={this.handleUpdatePersonClicked}
+                                handleCalculateButtonClicked={this.handleCalculateButtonClicked} />
                         </div>
                         <div className="col-3 ml-2">
                             <FontSizeForm

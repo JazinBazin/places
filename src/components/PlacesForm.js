@@ -2,11 +2,20 @@ import React, { useState } from "react";
 import ColorPicker from "./ColorPicker";
 import HideButton from "./HideButton";
 
+/*
+sectorFrom, handleSectorFromChange,
+sectorTo, handleSectorToChange,
+rowFrom, handleRowFromChange,
+rowTo, handleRowToChange,
+placeFrom, handlePlaceFromChange,
+placeTo, handlePlaceToChange,
+*/
+
 
 const PlacesForm = ({
     name, handleNameChange,
-    row, handleRowChange,
     sector, handleSectorChange,
+    row, handleRowChange,
     place, handlePlaceChange,
     handleAddButtonClicked,
     handleRemovePersonButtonClicked,
@@ -18,6 +27,7 @@ const PlacesForm = ({
     handleFillButtonClicked,
     color, onColorChange,
     handleUpdatePersonClicked,
+    handleCalculateButtonClicked
 }) => {
     const [hidden, setHidden] = useState(false);
     const display = hidden ? "none" : "block";
@@ -42,31 +52,68 @@ const PlacesForm = ({
                     <div className="col-2">
                         <div className="form-group">
                             <label>Сектор:</label>
-                            <input
-                                className="form-control"
-                                type="text"
-                                value={sector}
-                                onChange={handleSectorChange} />
+                            <div className="form-row">
+                                <div className="col-6">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="от"
+                                        value={sector}
+                                        onChange={handleSectorChange} />
+                                </div>
+                                <div className="col-6">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="до"
+                                    />
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <div className="col-2">
                         <div className="form-group">
                             <label>Ряд:</label>
-                            <input
-                                className="form-control"
-                                type="text"
-                                value={row}
-                                onChange={handleRowChange} />
+                            <div className="form-row">
+                                <div className="col-6">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="от"
+                                        value={row}
+                                        onChange={handleRowChange} />
+                                </div>
+                                <div className="col-6">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="до"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className="col-2">
                         <div className="form-group">
                             <label>Место:</label>
-                            <input
-                                className="form-control"
-                                type="text"
-                                value={place}
-                                onChange={handlePlaceChange} />
+                            <div className="form-row">
+                                <div className="col-6">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={place}
+                                        placeholder="от"
+                                        onChange={handlePlaceChange} />
+                                </div>
+                                <div className="col-6">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="до"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className="col-2">
@@ -121,6 +168,12 @@ const PlacesForm = ({
                             type="reset"
                             onClick={handleResetButtonClicked}>
                             Очистить
+                        </button>
+                        <button
+                            className="btn btn-primary btn-sm mr-2"
+                            type="button"
+                            onClick={handleCalculateButtonClicked}>
+                            Подсчёт
                         </button>
                         <button
                             className="btn btn-primary btn-sm mr-2"
