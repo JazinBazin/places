@@ -25,6 +25,7 @@ const PlacesForm = ({
     const display = hidden ? "none" : "block";
     return (
         <form
+            onSubmit={(e) => { e.preventDefault(); }}
             className="border rounded p-2 mt-2"
             style={{ position: "relative" }}>
             <h4 className="text-center mb-0">Распределение мест</h4>
