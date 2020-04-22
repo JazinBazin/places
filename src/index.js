@@ -13,7 +13,7 @@ document.addEventListener('keydown', function (event) {
         html2canvas(document.body)
             .then(canvas => {
                 let pdf = new jsPDF('landscape', 'mm', 'a4');
-                pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 297, 210);
+                pdf.addImage(canvas.toDataURL("image/jpeg"), "JPEG", 0, 0, 297, 210);
                 pdf.save("Места.pdf");
             });
     }
