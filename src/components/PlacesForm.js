@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import ColorPicker from "./ColorPicker";
 import HideButton from "./HideButton";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const PlacesForm = ({
     name, handleNameChange,
@@ -133,7 +135,7 @@ const PlacesForm = ({
                             className="btn btn-primary btn-sm mr-2"
                             type="button"
                             onClick={handleClearPlaceButtonClicked}>
-                            Освободить место
+                            Освободить
                         </button>
                         <button
                             className="btn btn-primary btn-sm mr-2"
